@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const WelcomeScreen = () => {
+const WelcomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Image
@@ -11,7 +11,7 @@ const WelcomeScreen = () => {
       />
 
       <Text style={styles.text}>
-        Never miss the important events of those you care so much about
+        Ніколи не пропускайте важливі події тих, хто вам так дорогий
       </Text>
 
       <Image
@@ -22,7 +22,9 @@ const WelcomeScreen = () => {
 
       {/* Кнопка на 100% ширины контейнера */}
       <Pressable
-        onPress={() => {}}
+        onPress={() => {
+          navigation.navigate('Login');
+        }}
         accessibilityRole="button"
         style={({ pressed }) => [
           styles.btnWrapper,
@@ -35,7 +37,7 @@ const WelcomeScreen = () => {
           end={{ x: 1, y: 0 }}
           style={styles.btn}
         >
-          <Text style={styles.btnText}>Get Started</Text>
+          <Text style={styles.btnText}>Почніть роботу</Text>
         </LinearGradient>
       </Pressable>
     </View>

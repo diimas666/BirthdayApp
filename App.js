@@ -1,14 +1,32 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-// comp
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 import WelcomeScreen from './screens/WelcomeScreen';
+import HomeScreen from './screens/HomeScreen';
+import LoginScreen from './screens/LoginScreen';
+
+const Stack = createNativeStackNavigator();
+
 export default function App() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        <WelcomeScreen />
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen
+              name="Welcome"
+              component={WelcomeScreen}
+              // options={{ headerShown: false }}
+            />
+            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="Login" component={LoginScreen}  />
+          </Stack.Navigator>
+        </NavigationContainer>
+
         <StatusBar style="auto" />
       </SafeAreaView>
     </SafeAreaProvider>
@@ -17,9 +35,7 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1, // только растяжение
     backgroundColor: '#f5e8f7ff',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
