@@ -24,7 +24,12 @@ export default function LoginScreen() {
   }
   return (
     <View style={styles.container}>
+      <Image
+        source={require('../assets/images/bg2.jpg')}
+        style={styles.bg_images}
+      />
       <Text style={styles.title}>Welcome</Text>
+
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -116,7 +121,6 @@ const styles = StyleSheet.create({
   },
   btn: {
     width: '100%',
-    marginBottom: 20,
     borderRadius: 28,
   },
   btnText: {
@@ -148,5 +152,11 @@ const styles = StyleSheet.create({
   link: {
     fontWeight: 'bold',
     // textDecorationLine: 'underline',
+  },
+  bg_images: {
+    width: '100%',
+    height: 200,
+    borderRadius: 28,
+    marginBottom: 20,
   },
 });
