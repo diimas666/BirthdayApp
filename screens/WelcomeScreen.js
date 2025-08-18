@@ -1,14 +1,16 @@
 import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-
+import Logo from '../assets/images/Logo.svg';
+// import Profile from '../assets/images/WelcomeProfiles.svg';
 const WelcomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Image
-        source={require('../assets/images/Logo.png')}
+      {/* <Image
+        source={require('../assets/images/Logo.svg')}
         style={{ width: 200, height: 270 }}
         resizeMode="contain"
-      />
+      /> */}
+      <Logo width={200} height={270} />
 
       <Text style={styles.text}>
         Ніколи не пропускайте важливі події тих, хто вам так дорогий
@@ -19,6 +21,7 @@ const WelcomeScreen = ({ navigation }) => {
         style={{ width: 280, height: 285, marginBottom: 50 }}
         resizeMode="contain"
       />
+      {/* <Profile width={280} height={285} /> */}
 
       {/* Кнопка на 100% ширины контейнера */}
       <Pressable
