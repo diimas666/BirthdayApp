@@ -1,12 +1,24 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Pressable,
+  Image,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import OrDivider from '../components/OrDivider';
+import { useNavigation } from '@react-navigation/native';
+
+// svg
+import Google from '../assets/images/logos_google-icon.svg';
+import FaceBook from '../assets/images/logos_facebook.svg';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [focused, setFocused] = useState(false);
-
+  const navigation = useNavigation();
   function emailHandler(text) {
     setEmail(text);
   }
@@ -40,6 +52,41 @@ export default function LoginScreen() {
       </Pressable>
 
       <OrDivider label="or" />
+      {/* кнопки  */}
+      <View style={{ gap: 20, width: '100%', marginBottom: 20 }}>
+        <Pressable
+          onPress={console.log('google press')}
+          style={({ pressed }) => [
+            styles.continue_buttonGoogle,
+            pressed && { opacity: 0.7 },
+          ]}
+        >
+          <FaceBook width={24} height={24} />
+          <Text style={styles.btnTextGoogle}>Continue with Facebook</Text>
+        </Pressable>
+        <Pressable
+          onPress={console.log('google press')}
+          style={({ pressed }) => [
+            styles.continue_buttonGoogle,
+            pressed && { opacity: 0.7 },
+          ]}
+        >
+          <Google width={24} height={24} />
+          <Text style={styles.btnTextGoogle}>Continue with Google</Text>
+        </Pressable>
+      </View>
+      <Text style={styles.note_link}>
+        Don’t have an account?
+        <Text
+          onPress={() => navigation.navigate('Sign Up')}
+          style={styles.link}
+          accessibilityRole="link"
+          accessibilityHint="Go to the Sign up screen"
+        >
+          {' '}
+          Sign up
+        </Text>
+      </Text>
     </View>
   );
 }
@@ -80,5 +127,26 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  btnTextGoogle: {
+    color: 'black',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  continue_buttonGoogle: {
+    backgroundColor: '#F9D3FD',
+    width: '100%',
+    paddingVertical: 15,
+    paddingHorizontal: 25,
+    borderRadius: 28, // круглее
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+  },
+  link: {
+    fontWeight: 'bold',
+    // textDecorationLine: 'underline',
   },
 });
