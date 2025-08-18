@@ -6,6 +6,9 @@ import {
   TextInput,
   Pressable,
   Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import OrDivider from '../components/OrDivider';
@@ -23,76 +26,91 @@ export default function LoginScreen() {
     setEmail(text);
   }
   return (
-    <View style={styles.container}>
-      <Image
-        source={require('../assets/images/bg2.jpg')}
-        style={styles.bg_images}
-      />
-      <Text style={styles.title}>Welcome</Text>
-
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        onChangeText={emailHandler}
-        autoCapitalize="none"
-        value={email}
-        placeholderTextColor="#6E2588"
-        autoCorrect={false}
-        inputMode="email"
-      />
-      <Pressable
-        style={({ pressed }) => [
-          styles.continue_button,
-          pressed && { opacity: 0.7 },
-        ]}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.select({
+        ios: headerHeight,
+        android: 0,
+      })}
+    >
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }} // чтобы центрирование не ломалось на коротких экранах
+        keyboardShouldPersistTaps="handled" // можно тапнуть по следующему полю, не закрывая клаву
+        keyboardDismissMode="on-drag"
       >
-        <LinearGradient
-          colors={['#6157FF', '#EE49FD']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.btn}
-        >
-          <Text style={styles.btnText}>Continue</Text>
-        </LinearGradient>
-      </Pressable>
+        <View style={styles.container}>
+          <Image
+            source={require('../assets/images/bg2.jpg')}
+            style={styles.bg_images}
+          />
+          <Text style={styles.title}>Welcome</Text>
 
-      <OrDivider label="or" />
-      {/* кнопки  */}
-      <View style={{ gap: 20, width: '100%', marginBottom: 20 }}>
-        <Pressable
-          onPress={console.log('google press')}
-          style={({ pressed }) => [
-            styles.continue_buttonGoogle,
-            pressed && { opacity: 0.7 },
-          ]}
-        >
-          <FaceBook width={24} height={24} />
-          <Text style={styles.btnTextGoogle}>Continue with Facebook</Text>
-        </Pressable>
-        <Pressable
-          onPress={console.log('google press')}
-          style={({ pressed }) => [
-            styles.continue_buttonGoogle,
-            pressed && { opacity: 0.7 },
-          ]}
-        >
-          <Google width={24} height={24} />
-          <Text style={styles.btnTextGoogle}>Continue with Google</Text>
-        </Pressable>
-      </View>
-      <Text style={styles.note_link}>
-        Don’t have an account?
-        <Text
-          onPress={() => navigation.navigate('Sign Up')}
-          style={styles.link}
-          accessibilityRole="link"
-          accessibilityHint="Go to the Sign up screen"
-        >
-          {' '}
-          Sign up
-        </Text>
-      </Text>
-    </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            onChangeText={emailHandler}
+            autoCapitalize="none"
+            value={email}
+            placeholderTextColor="#6E2588"
+            autoCorrect={false}
+            inputMode="email"
+          />
+          <Pressable
+            style={({ pressed }) => [
+              styles.continue_button,
+              pressed && { opacity: 0.7 },
+            ]}
+          >
+            <LinearGradient
+              colors={['#6157FF', '#EE49FD']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.btn}
+            >
+              <Text style={styles.btnText}>Continue</Text>
+            </LinearGradient>
+          </Pressable>
+
+          <OrDivider label="or" />
+          {/* кнопки  */}
+          <View style={{ gap: 20, width: '100%', marginBottom: 20 }}>
+            <Pressable
+              onPress={console.log('google press')}
+              style={({ pressed }) => [
+                styles.continue_buttonGoogle,
+                pressed && { opacity: 0.7 },
+              ]}
+            >
+              <FaceBook width={24} height={24} />
+              <Text style={styles.btnTextGoogle}>Continue with Facebook</Text>
+            </Pressable>
+            <Pressable
+              onPress={console.log('google press')}
+              style={({ pressed }) => [
+                styles.continue_buttonGoogle,
+                pressed && { opacity: 0.7 },
+              ]}
+            >
+              <Google width={24} height={24} />
+              <Text style={styles.btnTextGoogle}>Continue with Google</Text>
+            </Pressable>
+          </View>
+          <Text style={styles.note_link}>
+            Don’t have an account?
+            <Text
+              onPress={() => navigation.navigate('Sign Up')}
+              style={styles.link}
+              accessibilityRole="link"
+              accessibilityHint="Go to the Sign up screen"
+            >
+              {' '}
+              Sign up
+            </Text>
+          </Text>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
