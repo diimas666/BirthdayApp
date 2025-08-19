@@ -11,19 +11,15 @@ import {
   ScrollView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import OrDivider from '../components/OrDivider';
 import { useNavigation } from '@react-navigation/native';
+import { useHeaderHeight } from '@react-navigation/elements';
+export default function LoginEmailScreen() {
+  const [password, setPassword] = useState('');
+  const headerHeight = useHeaderHeight();
 
-// svg
-import Google from '../assets/images/logos_google-icon.svg';
-import FaceBook from '../assets/images/logos_facebook.svg';
-
-export default function LoginScreen() {
-  const [email, setEmail] = useState('');
-  const [focused, setFocused] = useState(false);
   const navigation = useNavigation();
-  function emailHandler(text) {
-    setEmail(text);
+  function passwordHandler(text) {
+    setPassword(text);
   }
   return (
     <KeyboardAvoidingView
@@ -44,19 +40,33 @@ export default function LoginScreen() {
             source={require('../assets/images/bg2.jpg')}
             style={styles.bg_images}
           />
-          <Text style={styles.title}>Welcome</Text>
-
+          <Text style={styles.titleH1}>Login</Text>
+          {/* картинка email фото */}
+          <View style={styles.container_email}>
+            <View>
+              <Image
+                width={50}
+                height={50}
+                source={require('../assets/images/profile.png')}
+              />
+            </View>
+            <View style={{ gap: 5 }}>
+              <Text style={styles.title}>Akobundu Benjamin</Text>
+              <Text style={styles.email}>akobundupraise066@gmail.com</Text>
+            </View>
+          </View>
           <TextInput
             style={styles.input}
-            placeholder="Email"
-            onChangeText={emailHandler}
+            placeholder="Password"
+            onChangeText={passwordHandler}
             autoCapitalize="none"
-            value={email}
+            value={password}
             placeholderTextColor="#6E2588"
             autoCorrect={false}
-            inputMode="email"
+            inputMode="password"
           />
           <Pressable
+            onPress={() => navigation.navigate('Dashboard')}
             style={({ pressed }) => [
               styles.continue_button,
               pressed && { opacity: 0.7 },
@@ -68,46 +78,11 @@ export default function LoginScreen() {
               end={{ x: 1, y: 0 }}
               style={styles.btn}
             >
-              <Text style={styles.btnText}>Continue</Text>
+              <Text style={styles.btnText}>Login</Text>
             </LinearGradient>
           </Pressable>
 
-          <OrDivider label="or" />
-          {/* кнопки  */}
-          <View style={{ gap: 20, width: '100%', marginBottom: 20 }}>
-            <Pressable
-              onPress={console.log('google press')}
-              style={({ pressed }) => [
-                styles.continue_buttonGoogle,
-                pressed && { opacity: 0.7 },
-              ]}
-            >
-              <FaceBook width={24} height={24} />
-              <Text style={styles.btnTextGoogle}>Continue with Facebook</Text>
-            </Pressable>
-            <Pressable
-              onPress={console.log('google press')}
-              style={({ pressed }) => [
-                styles.continue_buttonGoogle,
-                pressed && { opacity: 0.7 },
-              ]}
-            >
-              <Google width={24} height={24} />
-              <Text style={styles.btnTextGoogle}>Continue with Google</Text>
-            </Pressable>
-          </View>
-          <Text style={styles.note_link}>
-            Don’t have an account?
-            <Text
-              onPress={() => navigation.navigate('Sign Up')}
-              style={styles.link}
-              accessibilityRole="link"
-              accessibilityHint="Go to the Sign up screen"
-            >
-              {' '}
-              Sign up
-            </Text>
-          </Text>
+          <Text style={styles.link}>Forgot your password?</Text>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -122,7 +97,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5e8f7ff',
     paddingHorizontal: 24,
   },
-  title: { fontSize: 20, fontWeight: '700', marginBottom: 20 },
+  titleH1: { fontSize: 20, fontWeight: '700', marginBottom: 20 },
   input: {
     borderWidth: 1,
     borderColor: '#EE49FD',
@@ -136,6 +111,7 @@ const styles = StyleSheet.create({
   },
   continue_button: {
     width: '100%',
+    marginBottom: 20,
   },
   btn: {
     width: '100%',
@@ -167,6 +143,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 10,
   },
+  container_email: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 40,
+  },
   link: {
     fontWeight: 'bold',
     // textDecorationLine: 'underline',
@@ -176,5 +159,12 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 28,
     marginBottom: 20,
+  },
+  title: {
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  email: {
+    fontWeight: 'semibold',
   },
 });
