@@ -9,6 +9,7 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
+import Search from '../components/Search'
 const DashboardScreen = () => {
   return (
     <View style={styles.container}>
