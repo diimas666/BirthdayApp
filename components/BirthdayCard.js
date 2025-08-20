@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: 370,
-    aspectRatio: 350 / 200, // как в макете
+    aspectRatio: 350 / 220, // как в макете
     borderRadius: 20,
     paddingVertical: 11,
     paddingHorizontal: 20,
@@ -112,6 +112,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 10,
   },
   name: { fontSize: 23, color: 'white', fontWeight: '600', marginBottom: 4 },
   dateText: { fontSize: 16, color: 'white' },

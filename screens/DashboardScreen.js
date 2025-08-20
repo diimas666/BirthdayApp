@@ -1,14 +1,13 @@
 // DashboardScreen.jsx
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, FlatList } from 'react-native';
 import Search from '../components/Search';
 import ListOfTime from '../components/ListOfTime';
 import BirthdayCard from '../components/BirthdayCard';
 import UpcomingBirthdayItem from '../components/UpcomingBirthdayItem';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { format, parseISO, isWithinInterval } from 'date-fns';
 import { getRange } from '../utils/getRange';
 
-// Мокаем людей с РЕАЛЬНЫМИ годами:
 const allBirthdays = [
   {
     id: 1,
@@ -28,19 +27,18 @@ const allBirthdays = [
     birthDate: '2001-04-18',
     avatar: require('../assets/images/avatar3.png'),
   },
-  // {
-  //   id: 3,
-  //   name: 'Dima Tihtey',
-  //   birthDate: '2001-08-20',
-  //   avatar: require('../assets/images/avatar1.png'),
-  // },
+  {
+    id: 4,
+    name: 'Dima Tihtey',
+    birthDate: '2001-08-20',
+    avatar: require('../assets/images/avatar1.png'),
+  },
 ];
 
 const DashboardScreen = () => {
   const [period, setPeriod] = useState('today');
   const { start, end } = useMemo(() => getRange(period), [period]);
 
-  // фильтруем по текущему году (месяц/день)
   const filtered = useMemo(() => {
     const y = new Date().getFullYear();
     return allBirthdays
@@ -54,54 +52,67 @@ const DashboardScreen = () => {
           db = parseISO(b.birthDate);
         const aMD = new Date(2000, da.getMonth(), da.getDate());
         const bMD = new Date(2000, db.getMonth(), db.getDate());
-        return aMD - bMD; // внутри периода — по календарю
+        return aMD - bMD;
       });
   }, [start, end]);
 
   const primary = filtered[0] ?? null;
   const upcoming = filtered.slice(1);
+  const headerLabel = useMemo(() => format(start, 'dd.MMMM EEEE'), [start]);
 
-  const headerLabel = useMemo(() => {
-    // пример для 'today' — 27.March Sunday
-    return format(start, 'dd.MMMM EEEE');
-  }, [start]);
+  const renderItem = useCallback(
+    ({ item }) => <UpcomingBirthdayItem person={item} />,
+    []
+  );
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
+    <FlatList
+      style={styles.container}
+      data={upcoming} // данные только для "Upcoming"
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={renderItem}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingBottom: 24 }}
+      ListHeaderComponent={
         <View>
-          <Text style={styles.nameText}>Hi Benjamin,</Text>
-          <Text style={styles.contentText}>Here are today’s update:</Text>
+          <View style={styles.header}>
+            <View>
+              <Text style={styles.nameText}>Hi Benjamin,</Text>
+              <Text style={styles.contentText}>Here are today’s update:</Text>
+            </View>
+            <Image
+              source={require('../assets/images/profile.png')}
+              style={{ width: 50, height: 50, borderRadius: 25 }}
+            />
+          </View>
+
+          <Search />
+
+          <View style={{ marginBottom: 16 }}>
+            <ListOfTime value={period} onChange={setPeriod} />
+          </View>
+
+          <Text style={styles.sectionDate}>{headerLabel}</Text>
+
+          <BirthdayCard
+            person={primary}
+            dateLabel={period === 'today' ? 'Today' : ''}
+          />
+
+          {upcoming.length > 0 && (
+            <Text style={styles.upcomingTitle}>Upcoming birthdays</Text>
+          )}
         </View>
-        <Image
-          source={require('../assets/images/profile.png')}
-          style={{ width: 50, height: 50, borderRadius: 25 }}
-        />
-      </View>
-
-      <Search />
-
-      <View style={{ marginBottom: 16 }}>
-        <ListOfTime value={period} onChange={setPeriod} />
-      </View>
-
-      <Text style={styles.sectionDate}>{headerLabel}</Text>
-
-      {/* Большая карта: если есть именинник — person, иначе пустая */}
-      <BirthdayCard
-        person={primary}
-        dateLabel={period === 'today' ? 'Today' : ''}
-      />
-
-      {!!upcoming.length && (
-        <>
-          <Text style={styles.upcomingTitle}>Upcoming birthdays</Text>
-          {upcoming.map((p) => (
-            <UpcomingBirthdayItem key={p.id} person={p} />
-          ))}
-        </>
-      )}
-    </ScrollView>
+      }
+      ListEmptyComponent={
+        <View style={{ paddingVertical: 24 }}>
+          {/* Если нет upcoming — можно показать плейсхолдер */}
+          <Text style={{ opacity: 0.7, textAlign: 'center' }}>
+            No upcoming birthdays in this period
+          </Text>
+        </View>
+      }
+    />
   );
 };
 
@@ -119,5 +130,10 @@ const styles = StyleSheet.create({
   nameText: { fontWeight: 'bold', fontSize: 18, marginBottom: 2 },
   contentText: { fontWeight: '600', fontSize: 14 },
   sectionDate: { marginBottom: 12, opacity: 0.8 },
-  upcomingTitle: { marginTop: 8, marginBottom: 12, fontWeight: '700' },
+  upcomingTitle: {
+    marginTop: 8,
+    marginBottom: 12,
+    fontWeight: '600',
+    fontSize: 18,
+  },
 });
