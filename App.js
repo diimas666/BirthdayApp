@@ -11,12 +11,72 @@ import LoginEmailScreen from './screens/LoginEmailScreen';
 import SignUpScreen from './screens/SignUpScreen';
 import loginPasswordScreen from './screens/LoginPasswordScreen';
 import DashboardScreen from './screens/DashboardScreen';
+import AddBirthdayScreen from './screens/AddBirthdayScreen'; // добавь этот импорт
+import NotificationsScreen from './screens/NotificationsScreen'; // и этот
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+// импорты свг
+import HomeIcon from './assets/images/House.svg';
+import AddIcon from './assets/images/add_birthday.svg';
+import BellIcon from './assets/images/notification.svg';
+export function MainTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused }) => {
+          const iconColor = focused ? '#a033b3' : '#fff';
 
+          if (route.name === 'Home')
+            return <HomeIcon width={24} height={24} fill={iconColor} />;
+          if (route.name === 'AddBirthday')
+            return (
+              <AddIcon
+                width={72}
+                height={72}
+                fill={iconColor}
+                style={{
+                  marginTop: -55, // поднимаем иконку вверх
+                  alignSelf: 'center',
+                }}
+              />
+            );
+          if (route.name === 'Notifications')
+            return <BellIcon width={24} height={24} fill={iconColor} />;
+        },
+
+        tabBarActiveTintColor: '#a033b3', // цвет активной иконки/текста
+        tabBarInactiveTintColor: '#696868ff', // цвет неактивной иконки/текста
+        tabBarShowLabel: true, // показывать ли подписи под иконками
+        tabBarLabelStyle: {
+          fontSize: 14,
+          fontWeight: '600',
+        },
+        tabBarStyle: {
+          backgroundColor: '#ffffff', // цвет фона таб-бара
+          borderTopColor: '#ccc', // граница сверху
+          borderTopWidth: 1,
+          height: 88, // высота таб-бара
+          paddingBottom: 8, // отступ от нижней границы
+          paddingTop: 14,
+          position: 'absolute', // важно!
+          left: 0,
+          right: 0,
+          bottom: 0,
+        },
+
+        headerShown: false, // скрыть заголовок экрана сверху
+      })}
+    >
+      <Tab.Screen name="Home" component={DashboardScreen} />
+      <Tab.Screen name="AddBirthday" component={AddBirthdayScreen} />
+      <Tab.Screen name="Notifications" component={NotificationsScreen} />
+    </Tab.Navigator>
+  );
+}
 export default function App() {
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.container}>
         <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen
@@ -31,12 +91,11 @@ export default function App() {
               name="Login Password"
               component={loginPasswordScreen}
             />
-            <Stack.Screen name="Dashboard" component={DashboardScreen} />
+            <Stack.Screen name="Dashboard" component={MainTabs} />
           </Stack.Navigator>
         </NavigationContainer>
 
         <StatusBar style="auto" />
-      </SafeAreaView>
     </SafeAreaProvider>
   );
 }

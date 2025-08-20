@@ -1,36 +1,37 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  Pressable,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-} from 'react-native';
-import Search from '../components/Search'
+import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import Search from '../components/Search';
+import ListOfTime from '../components/ListOfTime';
+import { useState, useMemo } from 'react';
+import { getRange } from '../utils/getRange';
+
 const DashboardScreen = () => {
+  const [period, setPeriod] = useState('today');
+
+  const { start, end } = useMemo(() => getRange(period), [period]);
+  // TODO: использовать start/end для запроса данных
+
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.header}>
         <View>
           <Text style={styles.nameText}>Hi Benjamin,</Text>
           <Text style={styles.contentText}>Here are today’s update:</Text>
         </View>
         <Image
-          width={50}
-          height={50}
           source={require('../assets/images/profile.png')}
+          style={{ width: 50, height: 50, borderRadius: 25 }}
         />
       </View>
-      {/* Поиск */}
+
       <Search />
-    </View>
+
+      <ListOfTime value={period} onChange={setPeriod} />
+    </ScrollView>
   );
 };
 
 export default DashboardScreen;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -50,7 +51,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   contentText: {
-    fontWeight: 'semibold',
+    fontWeight: '600', // <-- было 'semibold'
     fontSize: 14,
   },
 });
