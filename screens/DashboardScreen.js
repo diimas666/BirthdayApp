@@ -1,33 +1,25 @@
+// DashboardScreen.jsx
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import Search from '../components/Search';
 import ListOfTime from '../components/ListOfTime';
-import { useState, useMemo } from 'react';
+import BirthdayCard from '../components/BirthdayCard';
+import UpcomingBirthdayItem from '../components/UpcomingBirthdayItem';
+import { useMemo, useState } from 'react';
+import { format, parseISO, isWithinInterval } from 'date-fns';
 import { getRange } from '../utils/getRange';
-import { isWithinInterval, parseISO, format } from 'date-fns';
-const today = new Date();
-const tomorrow = new Date();
-tomorrow.setDate(today.getDate() + 1);
 
-const formatDate = (date) => {
-  const year = 2000; // любой год
-  const month = date.getMonth();
-  const day = date.getDate();
-  return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(
-    2,
-    '0'
-  )}`;
-};
-export const allBirthdays = [
+// Мокаем людей с РЕАЛЬНЫМИ годами:
+const allBirthdays = [
   {
     id: 1,
     name: 'Grand Pops',
-    birthDate: formatDate(today), // Сегодня
+    birthDate: '1940-03-27',
     avatar: require('../assets/images/avatar1.png'),
   },
   {
     id: 2,
     name: 'Nimnomiobong Ntatam',
-    birthDate: formatDate(tomorrow), // Завтра
+    birthDate: '2002-04-02',
     avatar: require('../assets/images/avatar2.png'),
   },
   {
@@ -36,34 +28,43 @@ export const allBirthdays = [
     birthDate: '2001-04-18',
     avatar: require('../assets/images/avatar3.png'),
   },
+  {
+    id: 3,
+    name: 'Dima Tihtey',
+    birthDate: '2001-08-20',
+    avatar: require('../assets/images/avatar1.png'),
+  },
 ];
-
-const getAge = (birthDateStr) => {
-  const birthDate = parseISO(birthDateStr);
-  const today = new Date();
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const m = today.getMonth() - birthDate.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-    age--;
-  }
-  return age;
-};
 
 const DashboardScreen = () => {
   const [period, setPeriod] = useState('today');
   const { start, end } = useMemo(() => getRange(period), [period]);
 
-  const filteredBirthdays = useMemo(() => {
-    return allBirthdays.filter((person) => {
-      const date = parseISO(person.birthDate);
-      const birthdayThisYear = new Date(
-        new Date().getFullYear(),
-        date.getMonth(),
-        date.getDate()
-      );
-      return isWithinInterval(birthdayThisYear, { start, end });
-    });
+  // фильтруем по текущему году (месяц/день)
+  const filtered = useMemo(() => {
+    const y = new Date().getFullYear();
+    return allBirthdays
+      .filter((p) => {
+        const d = parseISO(p.birthDate);
+        const thisYear = new Date(y, d.getMonth(), d.getDate());
+        return isWithinInterval(thisYear, { start, end });
+      })
+      .sort((a, b) => {
+        const da = parseISO(a.birthDate),
+          db = parseISO(b.birthDate);
+        const aMD = new Date(2000, da.getMonth(), da.getDate());
+        const bMD = new Date(2000, db.getMonth(), db.getDate());
+        return aMD - bMD; // внутри периода — по календарю
+      });
   }, [start, end]);
+
+  const primary = filtered[0] ?? null;
+  const upcoming = filtered.slice(1);
+
+  const headerLabel = useMemo(() => {
+    // пример для 'today' — 27.March Sunday
+    return format(start, 'dd.MMMM EEEE');
+  }, [start]);
 
   return (
     <ScrollView style={styles.container}>
@@ -79,50 +80,24 @@ const DashboardScreen = () => {
       </View>
 
       <Search />
-      <View style={{ marginBottom: 20 }}>
+
+      <View style={{ marginBottom: 16 }}>
         <ListOfTime value={period} onChange={setPeriod} />
       </View>
 
-      {filteredBirthdays.length > 0 && (
-        <>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={{ marginBottom: 20 }}
-          >
-            {filteredBirthdays.map((person) => {
-              const age = getAge(person.birthDate);
-              const birthDateFormatted = format(
-                parseISO(person.birthDate),
-                'MMMM, yyyy'
-              );
-              return (
-                <View key={person.id} style={styles.birthdayCardHorizontal}>
-                  <Image source={person.avatar} style={styles.avatar} />
-                  <Text style={styles.name}>{person.name}</Text>
-                  <Text style={styles.dateText}>{birthDateFormatted}</Text>
-                  <Text style={styles.age}>{age} Today</Text>
-                </View>
-              );
-            })}
-          </ScrollView>
-        </>
-      )}
+      <Text style={styles.sectionDate}>{headerLabel}</Text>
 
-      {filteredBirthdays.length > 1 && (
+      {/* Большая карта: если есть именинник — person, иначе пустая */}
+      <BirthdayCard
+        person={primary}
+        dateLabel={period === 'today' ? 'Today' : ''}
+      />
+
+      {!!upcoming.length && (
         <>
           <Text style={styles.upcomingTitle}>Upcoming birthdays</Text>
-          {filteredBirthdays.slice(1).map((person) => (
-            <View key={person.id} style={styles.upcomingItem}>
-              <Image source={person.avatar} style={styles.smallAvatar} />
-              <View style={{ flex: 1 }}>
-                <Text style={styles.name}>{person.name}</Text>
-                <Text style={styles.date}>
-                  {format(parseISO(person.birthDate), 'dd MMMM')}
-                </Text>
-              </View>
-              <Text style={styles.age}>{getAge(person.birthDate)} yrs</Text>
-            </View>
+          {upcoming.map((p) => (
+            <UpcomingBirthdayItem key={p.id} person={p} />
           ))}
         </>
       )}
@@ -133,11 +108,7 @@ const DashboardScreen = () => {
 export default DashboardScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5e8f7ff',
-    paddingHorizontal: 24,
-  },
+  container: { flex: 1, backgroundColor: '#f5e8f7ff', paddingHorizontal: 24 },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -145,66 +116,8 @@ const styles = StyleSheet.create({
     marginTop: 77,
     marginBottom: 20,
   },
-  nameText: {
-    fontWeight: 'bold',
-    fontSize: 18,
-    marginBottom: 2,
-  },
-  contentText: {
-    fontWeight: '600',
-    fontSize: 14,
-  },
-
-  avatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginBottom: 12,
-  },
-  name: {
-    fontWeight: '700',
-    fontSize: 16,
-    marginBottom: 4,
-  },
-  age: {
-    fontSize: 14,
-    color: '#666',
-  },
-  upcomingTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  upcomingItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    padding: 12,
-    marginBottom: 12,
-    borderRadius: 10,
-  },
-  smallAvatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 16,
-    marginRight: 12,
-  },
-  date: {
-    fontSize: 13,
-    color: '#999',
-  },
-  birthdayCardHorizontal: {
-    backgroundColor: '#f07bd8',
-    borderRadius: 16,
-
-    width: 380,
-    height: 175,
-    paddingVertical: 11,
-    paddingHorizontal: 20,
-  },
-  dateText: {
-    fontSize: 13,
-    color: '#fff',
-    marginBottom: 4,
-  },
+  nameText: { fontWeight: 'bold', fontSize: 18, marginBottom: 2 },
+  contentText: { fontWeight: '600', fontSize: 14 },
+  sectionDate: { marginBottom: 12, opacity: 0.8 },
+  upcomingTitle: { marginTop: 8, marginBottom: 12, fontWeight: '700' },
 });
