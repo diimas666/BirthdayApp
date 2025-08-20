@@ -28,12 +28,12 @@ const allBirthdays = [
     birthDate: '2001-04-18',
     avatar: require('../assets/images/avatar3.png'),
   },
-  {
-    id: 3,
-    name: 'Dima Tihtey',
-    birthDate: '2001-08-20',
-    avatar: require('../assets/images/avatar1.png'),
-  },
+  // {
+  //   id: 3,
+  //   name: 'Dima Tihtey',
+  //   birthDate: '2001-08-20',
+  //   avatar: require('../assets/images/avatar1.png'),
+  // },
 ];
 
 const DashboardScreen = () => {

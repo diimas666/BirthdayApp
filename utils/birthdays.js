@@ -14,4 +14,3 @@ export const monthDay = (dateStr) => {
   const d = parseISO(dateStr);
   return { m: d.getMonth(), d: d.getDate() };
 };
-s
