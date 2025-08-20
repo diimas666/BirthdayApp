@@ -24,25 +24,28 @@ export function MainTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused }) => {
-          const iconColor = focused ? '#a033b3' : '#fff';
+        tabBarIcon: ({ focused, color }) => {
+          if (route.name === 'Home') {
+            return <HomeIcon width={24} height={24} fill={color} />;
+          }
 
-          if (route.name === 'Home')
-            return <HomeIcon width={24} height={24} fill={iconColor} />;
-          if (route.name === 'AddBirthday')
+          if (route.name === 'AddBirthday') {
             return (
               <AddIcon
                 width={72}
                 height={72}
-                fill={iconColor}
+                fill={color}
                 style={{
-                  marginTop: -55, // поднимаем иконку вверх
+                  marginTop: -55,
                   alignSelf: 'center',
                 }}
               />
             );
-          if (route.name === 'Notifications')
-            return <BellIcon width={24} height={24} fill={iconColor} />;
+          }
+
+          if (route.name === 'Notifications') {
+            return <BellIcon width={24} height={24} fill={color} />;
+          }
         },
 
         tabBarActiveTintColor: '#a033b3', // цвет активной иконки/текста
@@ -77,25 +80,22 @@ export function MainTabs() {
 export default function App() {
   return (
     <SafeAreaProvider>
-        <NavigationContainer>
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen
-              name="Welcome"
-              component={WelcomeScreen}
-              // options={{ headerShown: false }}
-            />
-            <Stack.Screen name="Home" component={HomeScreen} />
-            <Stack.Screen name="Login" component={LoginEmailScreen} />
-            <Stack.Screen name="Sign Up" component={SignUpScreen} />
-            <Stack.Screen
-              name="Login Password"
-              component={loginPasswordScreen}
-            />
-            <Stack.Screen name="Dashboard" component={MainTabs} />
-          </Stack.Navigator>
-        </NavigationContainer>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen
+            name="Welcome"
+            component={WelcomeScreen}
+            // options={{ headerShown: false }}
+          />
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Login" component={LoginEmailScreen} />
+          <Stack.Screen name="Sign Up" component={SignUpScreen} />
+          <Stack.Screen name="Login Password" component={loginPasswordScreen} />
+          <Stack.Screen name="Dashboard" component={MainTabs} />
+        </Stack.Navigator>
+      </NavigationContainer>
 
-        <StatusBar style="auto" />
+      <StatusBar style="auto" />
     </SafeAreaProvider>
   );
 }

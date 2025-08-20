@@ -4,7 +4,7 @@ export function getRange(period) {
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   if (period === 'today') {
     const end = new Date(startOfDay);
-    end.setDate(end.getDate() + 1);
+    end.setHours(23, 59, 59, 999);
     return { start: startOfDay, end };
   }
   if (period === 'week') {
