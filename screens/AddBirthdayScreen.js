@@ -60,8 +60,8 @@ export default function AddBirthdayScreen() {
       avatarKey: AVATAR_KEYS[Math.floor(Math.random() * AVATAR_KEYS.length)],
     };
 
-    dispatch(addBirthday(payload));
-    await scheduleBirthdayNotification(payload);
+    dispatch(addBirthday(payload)); // ✅ id добавляется автоматически внутри slice
+    await scheduleBirthdayNotification(payload); // 🔔 уведомление
 
     setName('');
     setPhone('');

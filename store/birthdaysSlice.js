@@ -16,41 +16,11 @@ export const avatarByKey = (key) => {
 // Первоначальные мок-данные — перенесём сюда (ключи аватаров!)
 const initialState = {
   list: [
-    {
-      id: '1',
-      name: 'Grand Pops',
-      birthDate: '1940-03-27',
-      phone: '',
-      avatarKey: 'a1',
-    },
-    {
-      id: '2',
-      name: 'Nimnomiobong Ntatam',
-      birthDate: '2002-04-02',
-      phone: '',
-      avatarKey: 'a2',
-    },
-    {
-      id: '3',
-      name: 'Chisom Anizor',
-      birthDate: '2001-04-18',
-      phone: '',
-      avatarKey: 'a3',
-    },
-    {
-      id: '4',
-      name: 'Dima Tihtey',
-      birthDate: '2001-08-20',
-      phone: '',
-      avatarKey: 'a1',
-    },
-    {
-      id: '5',
-      name: 'Dima Solic',
-      birthDate: '2001-08-21',
-      phone: '',
-      avatarKey: 'a2',
-    },
+    { id: '1', name: 'Grand Pops',      birthDate: '1940-03-27', phone: '', avatarKey: 'a1' },
+    { id: '2', name: 'Nimnomiobong...', birthDate: '2002-04-02', phone: '', avatarKey: 'a2' },
+    { id: '3', name: 'Chisom Anizor',   birthDate: '2001-04-18', phone: '', avatarKey: 'a3' },
+    { id: '4', name: 'Dima Tihtey',     birthDate: '2001-08-20', phone: '', avatarKey: 'a1' },
+    { id: '5', name: 'Dima Solic',      birthDate: '2001-08-21', phone: '', avatarKey: 'a2' }, // ← было 4
   ],
 };
 
