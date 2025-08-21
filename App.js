@@ -33,7 +33,9 @@ import { store, persistor } from './store/index';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import * as Notifications from 'expo-notifications';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+AsyncStorage.clear();
 /**
  * 👇 Внутренний стек для Dashboard:
  * тут хранятся главный экран + UserScreen

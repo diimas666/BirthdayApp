@@ -1,31 +1,34 @@
-// DashboardScreen.jsx
+// /screens/DashboardScreen.jsx
+import React, { useMemo, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, Image, FlatList } from 'react-native';
+import { format, parseISO, isWithinInterval } from 'date-fns';
+import { useSelector } from 'react-redux';
+import {
+  useSafeAreaInsets,
+  SafeAreaView,
+} from 'react-native-safe-area-context';
+
 import Search from '../components/Search';
 import ListOfTime from '../components/ListOfTime';
 import BirthdayCard from '../components/BirthdayCard';
 import UpcomingBirthdayItem from '../components/UpcomingBirthdayItem';
-import { useMemo, useState, useCallback } from 'react';
-import { format, parseISO, isWithinInterval } from 'date-fns';
 import { getRange } from '../utils/getRange';
-
-import { useSelector } from 'react-redux';
 import { avatarByKey } from '../store/birthdaysSlice';
 
-const DashboardScreen = () => {
+const TAB_HEIGHT = 88; // у тебя такой же в tabBarStyle
+
+export default function DashboardScreen() {
+  const insets = useSafeAreaInsets(); // <— safe area
   const [period, setPeriod] = useState('today');
   const { start, end } = useMemo(() => getRange(period), [period]);
-  // список слайса
 
-  const list = useSelector((state) => state.birthdays.list);
-  // Преобразуем в удобный массив с подставленным avatar (require)
+  const list = useSelector((s) => s.birthdays.list);
+
   const normalized = useMemo(
-    () =>
-      list.map((p) => ({
-        ...p,
-        avatar: avatarByKey(p.avatarKey),
-      })),
+    () => list.map((p) => ({ ...p, avatar: avatarByKey(p.avatarKey) })),
     [list]
   );
+
   const filtered = useMemo(() => {
     const y = new Date().getFullYear();
     return normalized
@@ -37,9 +40,10 @@ const DashboardScreen = () => {
       .sort((a, b) => {
         const da = parseISO(a.birthDate),
           db = parseISO(b.birthDate);
-        const aMD = new Date(2000, da.getMonth(), da.getDate());
-        const bMD = new Date(2000, db.getMonth(), db.getDate());
-        return aMD - bMD;
+        return (
+          new Date(2000, da.getMonth(), da.getDate()) -
+          new Date(2000, db.getMonth(), db.getDate())
+        );
       });
   }, [normalized, start, end]);
 
@@ -53,65 +57,71 @@ const DashboardScreen = () => {
   );
 
   return (
-    <FlatList
-      style={styles.container}
-      data={upcoming} // данные только для "Upcoming"
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={renderItem}
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: 24 }}
-      ListHeaderComponent={
-        <View>
-          <View style={styles.header}>
-            <View>
-              <Text style={styles.nameText}>Hi Benjamin,</Text>
-              <Text style={styles.contentText}>Here are today’s update:</Text>
+    <SafeAreaView style={styles.screen} edges={['top']}>
+      <FlatList
+        data={upcoming}
+        keyExtractor={(item) => String(item.id)}
+        renderItem={renderItem}
+        showsVerticalScrollIndicator={false}
+        // главное: учитываем safe-area сверху и высоту таб-бара снизу
+        contentContainerStyle={{
+          paddingTop: 12, // небольшой внутренний отступ
+          paddingBottom: insets.bottom + TAB_HEIGHT + 24, // чтобы последний айтем не прятался
+          paddingHorizontal: 24,
+        }}
+        ListHeaderComponent={
+          <View>
+            <View style={[styles.header, { paddingTop: 8 }]}>
+              <View>
+                <Text style={styles.nameText}>Hi Benjamin,</Text>
+                <Text style={styles.contentText}>Here are today’s update:</Text>
+              </View>
+              <Image
+                source={require('../assets/images/profile.png')}
+                style={{ width: 50, height: 50, borderRadius: 25 }}
+              />
             </View>
-            <Image
-              source={require('../assets/images/profile.png')}
-              style={{ width: 50, height: 50, borderRadius: 25 }}
+
+            <Search />
+
+            <View style={{ marginBottom: 16 }}>
+              <ListOfTime value={period} onChange={setPeriod} />
+            </View>
+
+            <Text style={styles.sectionDate}>{headerLabel}</Text>
+
+            <BirthdayCard
+              person={primary}
+              dateLabel={period === 'today' ? 'Today' : ''}
             />
+
+            {upcoming.length > 0 && (
+              <Text style={styles.upcomingTitle}>Upcoming birthdays</Text>
+            )}
           </View>
-
-          <Search />
-
-          <View style={{ marginBottom: 16 }}>
-            <ListOfTime value={period} onChange={setPeriod} />
+        }
+        // дополнительная «прокладка», если нет элементов
+        ListEmptyComponent={
+          <View style={{ paddingVertical: 24 }}>
+            <Text style={{ opacity: 0.7, textAlign: 'center' }}>
+              No upcoming birthdays in this period
+            </Text>
           </View>
-
-          <Text style={styles.sectionDate}>{headerLabel}</Text>
-
-          <BirthdayCard
-            person={primary}
-            dateLabel={period === 'today' ? 'Today' : ''}
-          />
-
-          {upcoming.length > 0 && (
-            <Text style={styles.upcomingTitle}>Upcoming birthdays</Text>
-          )}
-        </View>
-      }
-      ListEmptyComponent={
-        <View style={{ paddingVertical: 24 }}>
-          {/* Если нет upcoming — можно показать плейсхолдер */}
-          <Text style={{ opacity: 0.7, textAlign: 'center' }}>
-            No upcoming birthdays in this period
-          </Text>
-        </View>
-      }
-    />
+        }
+        // страховочный футер-спейсер (на случай динамики таб-бара)
+        ListFooterComponent={<View style={{ height: 8 }} />}
+      />
+    </SafeAreaView>
   );
-};
-
-export default DashboardScreen;
+}
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5e8f7ff', paddingHorizontal: 24 },
+  screen: { flex: 1, backgroundColor: '#f5e8f7ff' },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 77,
+    // УБРАЛИ жесткий marginTop: 77 — он ломал safe-area
     marginBottom: 20,
   },
   nameText: { fontWeight: 'bold', fontSize: 18, marginBottom: 2 },
