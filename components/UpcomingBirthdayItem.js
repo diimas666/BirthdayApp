@@ -14,7 +14,7 @@ export default function UpcomingBirthdayItem({ person }) {
         pressed && { opacity: 0.7 }, // уменьшаем прозрачность при нажатии
       ]}
       onPress={() => {
-        navigation.navigate('UserScreen', { person });
+        navigation.navigate('UserScreen', { id: person.id });
       }}
     >
       <ArrowSvg width={24} height={24} style={styles.arrow_link} />

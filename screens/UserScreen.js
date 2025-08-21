@@ -1,3 +1,5 @@
+// /screens/UserScreen.jsx
+import React from 'react';
 import {
   View,
   Text,
@@ -7,17 +9,48 @@ import {
   Pressable,
   ScrollView,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 import { format, parseISO } from 'date-fns';
+
 import { getAge } from '../utils/birthdays';
+import { avatarByKey } from '../store/birthdaysSlice';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const UserScreen = ({ route }) => {
+const UserScreen = () => {
   const navigation = useNavigation();
-  const { person } = route.params;
-  const age = getAge(person.birthDate);
-  const birthDateFull = format(parseISO(person.birthDate), 'dd MMMM, yyyy');
+  const route = useRoute();
+
+  // поддерживаем оба способа навигации:
+  // navigate('UserScreen', { id })   <-- рекомендуемый
+  // navigate('UserScreen', { person })  <-- старый вариант
+  const passedPerson = route.params?.person || null;
+  const id = route.params?.id ?? passedPerson?.id;
+
+  // берём свежие данные из стора по id
+  const fromStore = useSelector((s) =>
+    id ? s.birthdays.list.find((p) => p.id === id) : null
+  );
+
+  // что показывать: приоритет у стора, иначе то, что пришло в params
+  const base = fromStore || passedPerson;
+
+  if (!base) {
+    return (
+      <SafeAreaView
+        style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+      >
+        <Text>Person not found</Text>
+      </SafeAreaView>
+    );
+  }
+
+  // гарантируем источник аватара
+  const avatarSrc = base.avatar ?? avatarByKey(base.avatarKey);
+
+  const age = getAge(base.birthDate);
+  const birthDateFull = format(parseISO(base.birthDate), 'dd MMMM, yyyy');
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#faf5ff' }}>
@@ -35,12 +68,12 @@ const UserScreen = ({ route }) => {
         {/* Avatar */}
         <View style={styles.avatarWrap}>
           <View style={styles.avatarCircle}>
-            <Image source={person.avatar} style={styles.avatar} />
+            <Image source={avatarSrc} style={styles.avatar} />
           </View>
         </View>
 
         {/* Name + age */}
-        <Text style={styles.name}>{person.name}</Text>
+        <Text style={styles.name}>{base.name}</Text>
         <Text style={styles.ageText}>{age} Years</Text>
         <Text style={styles.today}>Birthday Today</Text>
 
@@ -80,8 +113,8 @@ const UserScreen = ({ route }) => {
         />
         <InfoRow
           icon={<Ionicons name="call-outline" size={20} color="#4b256f" />}
-          title="+234 815 123 0000"
-          subtitle="Mobile"
+          title={base.phone || 'No phone'}
+          subtitle={base.phone ? 'Mobile' : undefined}
         />
         <InfoRow
           icon={<Ionicons name="wifi-outline" size={20} color="#4b256f" />}
