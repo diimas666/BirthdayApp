@@ -3,15 +3,18 @@ import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
 import { format, parseISO } from 'date-fns';
 import { getAge } from '../utils/birthdays';
 import ArrowSvg from '../assets/images/arrow-right.svg';
+import { useNavigation } from '@react-navigation/native';
 export default function UpcomingBirthdayItem({ person }) {
+  const navigation = useNavigation();
   return (
     <Pressable
+      android_ripple={{ color: '#eadcff' }}
       style={({ pressed }) => [
         styles.item,
         pressed && { opacity: 0.7 }, // уменьшаем прозрачность при нажатии
       ]}
       onPress={() => {
-        console.log('Открываем профиль:', person.id);
+        navigation.navigate('UserScreen', { person });
       }}
     >
       <ArrowSvg width={24} height={24} style={styles.arrow_link} />

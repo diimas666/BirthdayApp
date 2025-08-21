@@ -13,6 +13,7 @@ import loginPasswordScreen from './screens/LoginPasswordScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import AddBirthdayScreen from './screens/AddBirthdayScreen'; // добавь этот импорт
 import NotificationsScreen from './screens/NotificationsScreen'; // и этот
+import UserScreen from './screens/UserScreen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -74,6 +75,7 @@ export function MainTabs() {
       <Tab.Screen name="Home" component={DashboardScreen} />
       <Tab.Screen name="AddBirthday" component={AddBirthdayScreen} />
       <Tab.Screen name="Notifications" component={NotificationsScreen} />
+
     </Tab.Navigator>
   );
 }
@@ -92,6 +94,7 @@ export default function App() {
           <Stack.Screen name="Sign Up" component={SignUpScreen} />
           <Stack.Screen name="Login Password" component={loginPasswordScreen} />
           <Stack.Screen name="Dashboard" component={MainTabs} />
+          <Stack.Screen name="UserScreen" component={UserScreen} />
         </Stack.Navigator>
       </NavigationContainer>
 
