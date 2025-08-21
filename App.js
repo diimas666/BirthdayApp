@@ -26,8 +26,11 @@ import BellIcon from './assets/images/notification.svg';
 const RootStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const DashboardStackNav = createNativeStackNavigator();
-
-/** 
+// 👉 NEW: Redux
+import { Provider } from 'react-redux';
+import { store, persistor } from './store/index';
+import { PersistGate } from 'redux-persist/integration/react';
+/**
  * 👇 Внутренний стек для Dashboard:
  * тут хранятся главный экран + UserScreen
  */
@@ -101,21 +104,28 @@ export function MainTabs() {
  */
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-        <RootStack.Navigator screenOptions={{ headerShown: false }}>
-          <RootStack.Screen name="Welcome" component={WelcomeScreen} />
-          <RootStack.Screen name="Login" component={LoginEmailScreen} />
-          <RootStack.Screen name="Sign Up" component={SignUpScreen} />
-          <RootStack.Screen name="Login Password" component={LoginPasswordScreen} />
+    <Provider store={store}>
+      <PersistGate persistor={persistor}>
+        <SafeAreaProvider>
+          <NavigationContainer>
+            <RootStack.Navigator screenOptions={{ headerShown: false }}>
+              <RootStack.Screen name="Welcome" component={WelcomeScreen} />
+              <RootStack.Screen name="Login" component={LoginEmailScreen} />
+              <RootStack.Screen name="Sign Up" component={SignUpScreen} />
+              <RootStack.Screen
+                name="Login Password"
+                component={LoginPasswordScreen}
+              />
 
-          {/* 👇 Тут теперь MainTabs */}
-          <RootStack.Screen name="Dashboard" component={MainTabs} />
-        </RootStack.Navigator>
-      </NavigationContainer>
+              {/* 👇 Тут теперь MainTabs */}
+              <RootStack.Screen name="Dashboard" component={MainTabs} />
+            </RootStack.Navigator>
+          </NavigationContainer>
 
-      <StatusBar style="auto" />
-    </SafeAreaProvider>
+          <StatusBar style="auto" />
+        </SafeAreaProvider>
+      </PersistGate>
+    </Provider>
   );
 }
 

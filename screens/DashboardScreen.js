@@ -8,37 +8,24 @@ import { useMemo, useState, useCallback } from 'react';
 import { format, parseISO, isWithinInterval } from 'date-fns';
 import { getRange } from '../utils/getRange';
 
-const allBirthdays = [
-  {
-    id: 1,
-    name: 'Grand Pops',
-    birthDate: '1940-03-27',
-    avatar: require('../assets/images/avatar1.png'),
-  },
-  {
-    id: 2,
-    name: 'Nimnomiobong Ntatam',
-    birthDate: '2002-04-02',
-    avatar: require('../assets/images/avatar2.png'),
-  },
-  {
-    id: 3,
-    name: 'Chisom Anizor',
-    birthDate: '2001-04-18',
-    avatar: require('../assets/images/avatar3.png'),
-  },
-  {
-    id: 4,
-    name: 'Dima Tihtey',
-    birthDate: '2001-08-20',
-    avatar: require('../assets/images/avatar1.png'),
-  },
-];
+import { useSelector } from 'react-redux';
+import { avatarByKey } from '../src/store/birthdaysSlice';
 
 const DashboardScreen = () => {
   const [period, setPeriod] = useState('today');
   const { start, end } = useMemo(() => getRange(period), [period]);
+  // список слайса
 
+  const list = useSelector((state) => state.birthdays.list);
+  // Преобразуем в удобный массив с подставленным avatar (require)
+  const normalized = useMemo(
+    () =>
+      list.map((p) => ({
+        ...p,
+        avatar: avatarByKey(p.avatarKey),
+      })),
+    [list]
+  );
   const filtered = useMemo(() => {
     const y = new Date().getFullYear();
     return allBirthdays

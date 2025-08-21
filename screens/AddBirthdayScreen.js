@@ -1,5 +1,5 @@
 // /screens/AddBirthdayScreen.jsx
-import React, { useState,useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -15,10 +15,12 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+import { addBirthday, AVATAR_KEYS } from '../src/store/birthdaysSlice';
 
 export default function AddBirthdayScreen() {
   const navigation = useNavigation();
-
+  const dispatch = useDispatch();
   // Модалка сразу открыта
   const [visible, setVisible] = useState(true);
   const [name, setName] = useState('');
@@ -49,10 +51,11 @@ export default function AddBirthdayScreen() {
     const err = validate();
     if (err) return alert(err);
 
-    console.log('✅ New birthday:', {
+    dispatch.addBirthday({
       name,
       phone,
       birthDate: date.toISOString().slice(0, 10),
+      avatarKey: AVATAR_KEYS[Math.floor(Math.random() * AVATAR_KEYS.length)],
     });
 
     setName('');
