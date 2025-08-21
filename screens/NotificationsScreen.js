@@ -18,12 +18,13 @@ import {
 } from 'date-fns';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { avatarByKey } from '../store/birthdaysSlice';
+import { useNavigation } from '@react-navigation/native';
 
 const TAB_HEIGHT = 88;
 
 export default function NotificationsScreen() {
   const insets = useSafeAreaInsets();
-
+  const navigation = useNavigation();
   // Возьмём людей из стора и найдём у кого др сегодня — это раздел "New"
   const people = useSelector((s) => s.birthdays.list);
 
@@ -120,7 +121,12 @@ export default function NotificationsScreen() {
       {/* Header */}
       <View style={[styles.topBar, { paddingTop: insets.top + 8 }]}>
         <Pressable style={styles.topBtn}>
-          <Ionicons name="chevron-back" size={22} color="#5b2d86" />
+          <Ionicons
+            name="chevron-back"
+            size={22}
+            color="#5b2d86"
+            onPress={() => navigation.goBack()}
+          />
         </Pressable>
         <Text style={styles.headerTitle}>Notifications</Text>
         <Pressable style={styles.topBtn}>
