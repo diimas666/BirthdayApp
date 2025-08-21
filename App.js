@@ -9,7 +9,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 // экраны
 import WelcomeScreen from './screens/WelcomeScreen';
-import HomeScreen from './screens/HomeScreen';
 import LoginEmailScreen from './screens/LoginEmailScreen';
 import SignUpScreen from './screens/SignUpScreen';
 import LoginPasswordScreen from './screens/LoginPasswordScreen';
@@ -106,7 +105,6 @@ export default function App() {
       <NavigationContainer>
         <RootStack.Navigator screenOptions={{ headerShown: false }}>
           <RootStack.Screen name="Welcome" component={WelcomeScreen} />
-          <RootStack.Screen name="HomeScreen" component={HomeScreen} />
           <RootStack.Screen name="Login" component={LoginEmailScreen} />
           <RootStack.Screen name="Sign Up" component={SignUpScreen} />
           <RootStack.Screen name="Login Password" component={LoginPasswordScreen} />
