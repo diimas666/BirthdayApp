@@ -9,7 +9,7 @@ import { format, parseISO, isWithinInterval } from 'date-fns';
 import { getRange } from '../utils/getRange';
 
 import { useSelector } from 'react-redux';
-import { avatarByKey } from '../src/store/birthdaysSlice';
+import { avatarByKey } from '../store/birthdaysSlice';
 
 const DashboardScreen = () => {
   const [period, setPeriod] = useState('today');
@@ -28,7 +28,7 @@ const DashboardScreen = () => {
   );
   const filtered = useMemo(() => {
     const y = new Date().getFullYear();
-    return allBirthdays
+    return normalized
       .filter((p) => {
         const d = parseISO(p.birthDate);
         const thisYear = new Date(y, d.getMonth(), d.getDate());
@@ -41,7 +41,7 @@ const DashboardScreen = () => {
         const bMD = new Date(2000, db.getMonth(), db.getDate());
         return aMD - bMD;
       });
-  }, [start, end]);
+  }, [normalized, start, end]);
 
   const primary = filtered[0] ?? null;
   const upcoming = filtered.slice(1);

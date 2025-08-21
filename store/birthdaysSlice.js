@@ -4,13 +4,13 @@ export const AVATAR_KEYS = ['a1', 'a2', 'a3'];
 export const avatarByKey = (key) => {
   switch (key) {
     case 'a1':
-      return require('../../assets/images/avatar1.png');
+      return require('../assets/images/avatar1.png');
     case 'a2':
-      return require('../../assets/images/avatar2.png');
+      return require('../assets/images/avatar2.png');
     case 'a3':
-      return require('../../assets/images/avatar3.png');
+      return require('../assets/images/avatar3.png');
     default:
-      return require('../../assets/images/avatar1.png');
+      return require('../assets/images/avatar1.png');
   }
 };
 // Первоначальные мок-данные — перенесём сюда (ключи аватаров!)
@@ -45,7 +45,7 @@ const initialState = {
       avatarKey: 'a1',
     },
     {
-      id: '4',
+      id: '5',
       name: 'Dima Solic',
       birthDate: '2001-08-21',
       phone: '',
@@ -78,5 +78,5 @@ const BirthdaysSlice = createSlice({
   },
 });
 export const { addBirthday, updateBirthday, removeBirthday } =
-  birthdaysSlice.actions;
-export default birthdaysSlice.reducer;
+  BirthdaysSlice.actions;
+export default BirthdaysSlice.reducer;

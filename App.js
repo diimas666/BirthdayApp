@@ -1,11 +1,12 @@
 // App.js
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-
+import {useEffect} from 'react'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import NotificationsInitializer from './components/NotificationsInitializer';
 
 // экраны
 import WelcomeScreen from './screens/WelcomeScreen';
@@ -30,6 +31,9 @@ const DashboardStackNav = createNativeStackNavigator();
 import { Provider } from 'react-redux';
 import { store, persistor } from './store/index';
 import { PersistGate } from 'redux-persist/integration/react';
+
+import * as Notifications from 'expo-notifications';
+
 /**
  * 👇 Внутренний стек для Dashboard:
  * тут хранятся главный экран + UserScreen
@@ -99,15 +103,34 @@ export function MainTabs() {
   );
 }
 
+// чтобы уведомления показывались, даже если приложение открыто
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 /**
  * 👇 Корневой стек приложения
  */
 export default function App() {
+  useEffect(() => {
+    // Запрос разрешения
+    async function registerForPushNotificationsAsync() {
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (status !== 'granted') {
+        alert('Разрешение на уведомления не выдано!');
+      }
+    }
+    registerForPushNotificationsAsync();
+  }, []);
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor}>
         <SafeAreaProvider>
           <NavigationContainer>
+            <NotificationsInitializer />
             <RootStack.Navigator screenOptions={{ headerShown: false }}>
               <RootStack.Screen name="Welcome" component={WelcomeScreen} />
               <RootStack.Screen name="Login" component={LoginEmailScreen} />

@@ -12,11 +12,13 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
+import { scheduleBirthdayNotification } from '../utils/notifications';
+
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
-import { addBirthday, AVATAR_KEYS } from '../src/store/birthdaysSlice';
+import { addBirthday, AVATAR_KEYS } from '../store/birthdaysSlice';
 
 export default function AddBirthdayScreen() {
   const navigation = useNavigation();
@@ -47,26 +49,29 @@ export default function AddBirthdayScreen() {
     return null;
   };
 
-  const onSave = () => {
+  const onSave = async () => {
     const err = validate();
     if (err) return alert(err);
 
-    dispatch.addBirthday({
+    const payload = {
       name,
       phone,
       birthDate: date.toISOString().slice(0, 10),
       avatarKey: AVATAR_KEYS[Math.floor(Math.random() * AVATAR_KEYS.length)],
-    });
+    };
+
+    dispatch(addBirthday(payload));
+    await scheduleBirthdayNotification(payload);
 
     setName('');
     setPhone('');
-    setDate(new Date());
-
+    setDate(new Date(2000, 0, 1));
     goBackToDashboardTab();
   };
 
   // iOS: inline spinner; Android: открываем системный диалог
   const openAndroidDatePicker = () => setAndroidPickerVisible(true);
+
   const onAndroidDateChange = (event, selectedDate) => {
     setAndroidPickerVisible(false);
     if (selectedDate) setDate(selectedDate);
@@ -119,7 +124,7 @@ export default function AddBirthdayScreen() {
                         mode="date"
                         display="spinner"
                         onChange={(_, d) => d && setDate(d)}
-                        maximumDate={new Date()}
+                        maximumDate={new Date()} // оставляем, но стартуем с 2000 года
                       />
                     ) : (
                       <>
