@@ -8,20 +8,22 @@ import {
   SafeAreaView,
   Pressable,
   ScrollView,
+  Animated,
+  Alert,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
 import { format, parseISO } from 'date-fns';
-
+import { useSelector, useDispatch } from 'react-redux'; // <— добавили
+import { avatarByKey, removeBirthday } from '../store/birthdaysSlice'; // <— импорт экшена
+import { useRef } from 'react';
 import { getAge } from '../utils/birthdays';
-import { avatarByKey } from '../store/birthdaysSlice';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const UserScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-
+  const dispatch = useDispatch(); // <—
   // поддерживаем оба способа навигации:
   // navigate('UserScreen', { id })   <-- рекомендуемый
   // navigate('UserScreen', { person })  <-- старый вариант
@@ -51,77 +53,131 @@ const UserScreen = () => {
 
   const age = getAge(base.birthDate);
   const birthDateFull = format(parseISO(base.birthDate), 'dd MMMM, yyyy');
+  // анимация прозрачности
+  const opacity = useRef(new Animated.Value(1)).current;
 
+  const confirmAndDelete = () => {
+    Alert.alert(
+      'Удалить человека?',
+      `«${base.name}» будет удалён безвозвратно.`,
+      [
+        { text: 'Отмена', style: 'cancel' },
+        {
+          text: 'Удалить',
+          style: 'destructive',
+          onPress: () => {
+            // 1) плавно скрываем
+            Animated.timing(opacity, {
+              toValue: 0,
+              duration: 220,
+              useNativeDriver: true,
+            }).start(() => {
+              // 2) удаляем из стора
+              if (base.id) dispatch(removeBirthday(base.id));
+              // 3) уходим назад
+              navigation.goBack();
+            });
+          },
+        },
+      ]
+    );
+  };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#faf5ff' }}>
       <ScrollView contentContainerStyle={styles.container}>
         {/* Top bar */}
         <View style={styles.topBar}>
-          <Pressable onPress={() => navigation.goBack()} style={styles.iconBtn}>
+          <Pressable
+            onPress={() => navigation.goBack()}
+            style={({ pressed }) => [styles.iconBtn, pressed && styles.pressed]}
+            android_ripple={{ color: '#e6d9ff' }}
+          >
             <Ionicons name="chevron-back" size={22} color="#5b2d86" />
           </Pressable>
-          <Pressable style={styles.iconBtn}>
-            <Ionicons name="heart-outline" size={20} color="#5b2d86" />
-          </Pressable>
-        </View>
-
-        {/* Avatar */}
-        <View style={styles.avatarWrap}>
-          <View style={styles.avatarCircle}>
-            <Image source={avatarSrc} style={styles.avatar} />
+          <View style={{ flexDirection: 'row', gap: 5 }}>
+            <Pressable
+              onPress={confirmAndDelete}
+              style={({ pressed }) => [
+                styles.iconBtn,
+                pressed && styles.pressed,
+              ]}
+              android_ripple={{ color: '#e6d9ff' }}
+            >
+              <Ionicons name="trash" size={20} color="#5b2d86" />
+            </Pressable>
+            <Pressable
+              style={({ pressed }) => [
+                styles.iconBtn,
+                pressed && styles.pressed,
+              ]}
+              android_ripple={{ color: '#e6d9ff' }}
+            >
+              <Ionicons name="heart-outline" size={20} color="#5b2d86" />
+            </Pressable>
           </View>
         </View>
 
-        {/* Name + age */}
-        <Text style={styles.name}>{base.name}</Text>
-        <Text style={styles.ageText}>{age} Years</Text>
-        <Text style={styles.today}>Birthday Today</Text>
+        {/* Avatar */}
+        <Animated.View style={{ width: '100%', alignItems: 'center', opacity }}>
+          <Animated.View style={styles.avatarWrap}>
+            <View style={styles.avatarCircle}>
+              <Image source={avatarSrc} style={styles.avatar} />
+            </View>
+          </Animated.View>
 
-        {/* Actions */}
-        <View style={styles.actionsRow}>
-          <ActionIcon
-            icon={<Ionicons name="call-outline" size={22} color="#4b256f" />}
-          />
-          <ActionIcon
-            icon={<Ionicons name="logo-whatsapp" size={22} color="#4b256f" />}
-          />
-          <ActionIcon
-            icon={<Ionicons name="logo-facebook" size={22} color="#4b256f" />}
-          />
-          <ActionIcon
+          {/* Name + age */}
+          <Text style={styles.name}>{base.name}</Text>
+          <Text style={styles.ageText}>{age} Years</Text>
+          <Text style={styles.today}>Birthday Today</Text>
+
+          {/* Actions */}
+          <View style={styles.actionsRow}>
+            <ActionIcon
+              icon={<Ionicons name="call-outline" size={22} color="#4b256f" />}
+            />
+            <ActionIcon
+              icon={<Ionicons name="logo-whatsapp" size={22} color="#4b256f" />}
+            />
+            <ActionIcon
+              icon={<Ionicons name="logo-facebook" size={22} color="#4b256f" />}
+            />
+            <ActionIcon
+              icon={
+                <MaterialCommunityIcons
+                  name="gift-outline"
+                  size={22}
+                  color="#4b256f"
+                />
+              }
+            />
+          </View>
+
+          {/* Info cards */}
+          <InfoRow
             icon={
               <MaterialCommunityIcons
-                name="gift-outline"
-                size={22}
+                name="cake-variant-outline"
+                size={20}
                 color="#4b256f"
               />
             }
+            title="Birthday"
+            value={birthDateFull}
           />
-        </View>
-
-        {/* Info cards */}
-        <InfoRow
-          icon={
-            <MaterialCommunityIcons
-              name="cake-variant-outline"
-              size={20}
-              color="#4b256f"
-            />
-          }
-          title="Birthday"
-          value={birthDateFull}
-        />
-        <InfoRow
-          icon={<Ionicons name="call-outline" size={20} color="#4b256f" />}
-          title={base.phone || 'No phone'}
-          subtitle={base.phone ? 'Mobile' : undefined}
-        />
-        <InfoRow
-          icon={<Ionicons name="wifi-outline" size={20} color="#4b256f" />}
-          title="Share Birthday"
-          subtitle="Tell family and friends"
-          rightIcon={<Ionicons name="send-outline" size={18} color="#4b256f" />}
-        />
+          <InfoRow
+            icon={<Ionicons name="call-outline" size={20} color="#4b256f" />}
+            title={base.phone || 'No phone'}
+            subtitle={base.phone ? 'Mobile' : undefined}
+          />
+          <InfoRow
+            icon={<Ionicons name="wifi-outline" size={20} color="#4b256f" />}
+            title="Share Birthday"
+            subtitle="Tell family and friends"
+            rightIcon={
+              <Ionicons name="send-outline" size={18} color="#4b256f" />
+            }
+          />
+        </Animated.View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -162,6 +218,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#f1e6ff',
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden', // <— важно для рипла (Android)
+    borderWidth: 1, // (необязательно) чтобы рипл было лучше видно
+    borderColor: '#e3d4ff',
+  },
+  pressed: {
+    opacity: 0.6, // <— iOS / общий feedback
   },
   avatarWrap: { marginTop: 20, marginBottom: 12 },
   avatarCircle: {
