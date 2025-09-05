@@ -1,6 +1,9 @@
 {
   "settings": "Налаштування",
-  "language": "Мова",
-  "profile": "Профіль",
-  "back": "Назад"
+  "back": "Назад",
+  "tabs": {
+    "home": "Головна",
+    "addBirthday": "Додати день нар.",
+    "notifications": "Сповіщення"
+  }
 }

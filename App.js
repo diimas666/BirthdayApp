@@ -1,12 +1,13 @@
 // App.js
+import { useTranslation } from 'react-i18next';
 import './i18n';
 import { I18nextProvider } from 'react-i18next';
-import i18n from './i18n';
+import i18n, { loadStoredLanguage } from './i18n';
 
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -76,6 +77,8 @@ function DashboardStack() {
 
 /** Табы */
 function MainTabs() {
+  const { t } = useTranslation();
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -114,9 +117,21 @@ function MainTabs() {
         headerShown: false,
       })}
     >
-      <Tab.Screen name="Home" component={DashboardStack} />
-      <Tab.Screen name="AddBirthday" component={AddBirthdayScreen} />
-      <Tab.Screen name="Notifications" component={NotificationsScreen} />
+      <Tab.Screen
+        name="Home"
+        component={DashboardStack}
+        options={{ tabBarLabel: t('tabs.home') }}
+      />
+      <Tab.Screen
+        name="AddBirthday"
+        component={AddBirthdayScreen}
+        options={{ tabBarLabel: t('tabs.addBirthday') }}
+      />
+      <Tab.Screen
+        name="Notifications"
+        component={NotificationsScreen}
+        options={{ tabBarLabel: t('tabs.notifications') }}
+      />
     </Tab.Navigator>
   );
 }
@@ -131,12 +146,25 @@ Notifications.setNotificationHandler({
 });
 
 export default function App() {
+  const [ready, setReady] = useState(false);
+
   useEffect(() => {
     (async () => {
+      // 1) загружаем язык
+      await loadStoredLanguage();
+
+      // 2) уведомления
       const { status } = await Notifications.requestPermissionsAsync();
       if (status !== 'granted') alert('Разрешение на уведомления не выдано!');
+
+      setReady(true);
     })();
   }, []);
+
+  // ⬇️ Хуки ВСЕГДА должны вызываться, даже если экран не готов
+  if (!ready) {
+    return null; // можно сюда поставить Splash или ActivityIndicator
+  }
 
   return (
     <Provider store={store}>
@@ -145,8 +173,6 @@ export default function App() {
           <SafeAreaProvider>
             <NavigationContainer>
               <NotificationsInitializer />
-
-              {/* Корневой стек. ВАЖНО: ни одного дубликата имён! */}
               <RootStack.Navigator screenOptions={{ headerShown: false }}>
                 <RootStack.Screen name="Welcome" component={WelcomeScreen} />
                 <RootStack.Screen name="Login" component={LoginEmailScreen} />
@@ -157,7 +183,6 @@ export default function App() {
                 <RootStack.Screen name="SignUp" component={SignUpScreen} />
                 <RootStack.Screen name="Dashboard" component={MainTabs} />
               </RootStack.Navigator>
-
               <StatusBar style="auto" />
             </NavigationContainer>
           </SafeAreaProvider>

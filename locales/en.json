@@ -1,5 +1,9 @@
 {
   "settings": "Settings",
-  "language": "Language",
-  "profile": "Profile"
+  "back": "Back",
+  "tabs": {
+    "home": "Home",
+    "addBirthday": "Add Birthday",
+    "notifications": "Notifications"
+  }
 }
