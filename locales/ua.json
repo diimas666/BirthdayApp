@@ -1,9 +1,42 @@
 {
   "settings": "Налаштування",
   "back": "Назад",
+
   "tabs": {
     "home": "Головна",
     "addBirthday": "Додати день нар.",
     "notifications": "Сповіщення"
-  }
+  },
+
+  "welcomeText": "Ніколи не пропускайте важливі події тих, хто вам так дорогий",
+  "startWork": "Почніть роботу",
+  "welcome": "Ласкаво просимо",
+  "continue": "Продовжити",
+  "continueWithFacebook": "Продовжити через Facebook",
+  "continueWithGoogle": "Продовжити через Google",
+  "Don’tHaveanAccount": "Немає облікового запису?",
+  "Signup": "Зареєструватися",
+  "or": "чи",
+  "login": "Увійти",
+  "forgotPassword": "Забули свій пароль?",
+
+  "timeTabs": {
+    "today": "Сьогодні",
+    "week": "Тиждень",
+    "month": "Місяць",
+    "year": "Рік"
+  },
+
+  "searchBirthday": "Пошук дня народження",
+  "upcomingBirthdays": "Найближчі дні народження",
+  "noupcoming": "У цей період немає днів народження",
+
+  "today": "Сьогодні",
+  "todayBirthdaysTitle": "Сьогоднішні дні народження",
+  "noBirthdayToday": "Сьогодні немає днів народження",
+
+  "whatsapp": "WhatsApp",
+  "sendGift": "Надіслати подарунок",
+  "messenger": "Messenger",
+  "Upcomingbirthdays": "Найближчі дні народження"
 }

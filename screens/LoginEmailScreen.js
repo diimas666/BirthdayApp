@@ -14,6 +14,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import OrDivider from '../components/OrDivider';
 import { useNavigation } from '@react-navigation/native';
 import { useHeaderHeight } from '@react-navigation/elements';
+import { useTranslation } from 'react-i18next';
 
 // svg
 import Google from '../assets/images/logos_google-icon.svg';
@@ -21,6 +22,8 @@ import FaceBook from '../assets/images/logos_facebook.svg';
 
 export default function LoginEmailScreen() {
   const [email, setEmail] = useState('');
+  const { t } = useTranslation();
+
   // const [focused, setFocused] = useState(false);
   const headerHeight = useHeaderHeight();
   const navigation = useNavigation();
@@ -46,7 +49,7 @@ export default function LoginEmailScreen() {
             source={require('../assets/images/bg2.jpg')}
             style={styles.bg_images}
           />
-          <Text style={styles.title}>Welcome</Text>
+          <Text style={styles.title}>{t('welcome')}</Text>
 
           <TextInput
             style={styles.input}
@@ -71,11 +74,11 @@ export default function LoginEmailScreen() {
               end={{ x: 1, y: 0 }}
               style={styles.btn}
             >
-              <Text style={styles.btnText}>Continue</Text>
+              <Text style={styles.btnText}>{t('continue')}</Text>
             </LinearGradient>
           </Pressable>
 
-          <OrDivider label="or" />
+          <OrDivider label={t('or')} />
           {/* кнопки  */}
           <View style={{ gap: 20, width: '100%', marginBottom: 20 }}>
             <Pressable
@@ -86,7 +89,9 @@ export default function LoginEmailScreen() {
               ]}
             >
               <FaceBook width={24} height={24} />
-              <Text style={styles.btnTextGoogle}>Continue with Facebook</Text>
+              <Text style={styles.btnTextGoogle}>
+                {t('continueWithFacebook')}
+              </Text>
             </Pressable>
             <Pressable
               onPress={console.log('google press')}
@@ -96,11 +101,13 @@ export default function LoginEmailScreen() {
               ]}
             >
               <Google width={24} height={24} />
-              <Text style={styles.btnTextGoogle}>Continue with Google</Text>
+              <Text style={styles.btnTextGoogle}>
+                {t('continueWithGoogle')}
+              </Text>
             </Pressable>
           </View>
           <Text style={styles.note_link}>
-            Don’t have an account?
+            {t('Don’tHaveanAccount')}
             <Text
               onPress={() => navigation.navigate('SignUp')}
               style={styles.link}
@@ -108,7 +115,7 @@ export default function LoginEmailScreen() {
               accessibilityHint="Go to the Sign up screen"
             >
               {' '}
-              Sign up
+              {t('Signup')}
             </Text>
           </Text>
         </View>

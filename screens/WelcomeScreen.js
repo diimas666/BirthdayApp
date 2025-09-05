@@ -1,8 +1,12 @@
 import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Logo from '../assets/images/Logo.svg';
+import { useTranslation } from 'react-i18next';
+
 // import Profile from '../assets/images/WelcomeProfiles.svg';
 const WelcomeScreen = ({ navigation }) => {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.container}>
       {/* <Image
@@ -12,9 +16,7 @@ const WelcomeScreen = ({ navigation }) => {
       /> */}
       <Logo width={200} height={270} />
 
-      <Text style={styles.text}>
-        Ніколи не пропускайте важливі події тих, хто вам так дорогий
-      </Text>
+      <Text style={styles.text}>{t('welcomeText')}</Text>
 
       <Image
         source={require('../assets/images/WelcomeProfiles.png')}
@@ -40,7 +42,7 @@ const WelcomeScreen = ({ navigation }) => {
           end={{ x: 1, y: 0 }}
           style={styles.btn}
         >
-          <Text style={styles.btnText}>Почніть роботу</Text>
+          <Text style={styles.btnText}>{t('startWork')}</Text>
         </LinearGradient>
       </Pressable>
     </View>

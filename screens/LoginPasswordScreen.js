@@ -13,9 +13,12 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { useHeaderHeight } from '@react-navigation/elements';
+import { useTranslation } from 'react-i18next';
+
 export default function LoginEmailScreen() {
   const [password, setPassword] = useState('');
   const headerHeight = useHeaderHeight();
+  const { t } = useTranslation();
 
   const navigation = useNavigation();
   function passwordHandler(text) {
@@ -40,7 +43,7 @@ export default function LoginEmailScreen() {
             source={require('../assets/images/bg2.jpg')}
             style={styles.bg_images}
           />
-          <Text style={styles.titleH1}>Login</Text>
+          <Text style={styles.titleH1}>{t('login')}</Text>
           {/* картинка email фото */}
           <View style={styles.container_email}>
             <View>
@@ -78,11 +81,11 @@ export default function LoginEmailScreen() {
               end={{ x: 1, y: 0 }}
               style={styles.btn}
             >
-              <Text style={styles.btnText}>Login</Text>
+              <Text style={styles.btnText}>{t('login')}</Text>
             </LinearGradient>
           </Pressable>
 
-          <Text style={styles.link}>Forgot your password?</Text>
+          <Text style={styles.link}>{t('forgotPassword')}</Text>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

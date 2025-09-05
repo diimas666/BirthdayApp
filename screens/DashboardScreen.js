@@ -1,5 +1,5 @@
 // /screens/DashboardScreen.jsx
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback, useTransition } from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import {
   SafeAreaView,
 } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 import Search from '../components/Search';
 import ListOfTime from '../components/ListOfTime';
@@ -27,6 +28,7 @@ import { useNavigation } from '@react-navigation/native';
 const TAB_HEIGHT = 88; // у тебя такой же в tabBarStyle
 
 export default function DashboardScreen() {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets(); // <— safe area
   const [period, setPeriod] = useState('today');
   const { start, end } = useMemo(() => getRange(period), [period]);
@@ -119,7 +121,7 @@ export default function DashboardScreen() {
             />
 
             {upcoming.length > 0 && (
-              <Text style={styles.upcomingTitle}>Upcoming birthdays</Text>
+              <Text style={styles.upcomingTitle}>{t('Upcomingbirthdays')}</Text>
             )}
           </View>
         }
@@ -127,7 +129,7 @@ export default function DashboardScreen() {
         ListEmptyComponent={
           <View style={{ paddingVertical: 24 }}>
             <Text style={{ opacity: 0.7, textAlign: 'center' }}>
-              No upcoming birthdays in this period
+              {t('noupcoming')}
             </Text>
           </View>
         }

@@ -1,9 +1,43 @@
 {
   "settings": "Settings",
   "back": "Back",
+
   "tabs": {
     "home": "Home",
     "addBirthday": "Add Birthday",
     "notifications": "Notifications"
-  }
+  },
+
+  "welcomeText": "Never miss the important events of those who are so dear to you",
+  "startWork": "Get Started",
+  "welcome": "Welcome",
+  "continue": "Continue",
+  "continueWithFacebook": "Continue with Facebook",
+  "continueWithGoogle": "Continue with Google",
+  "Don’tHaveanAccount": "Don’t have an account?",
+  "Signup": "Sign up",
+  "or": "or",
+  "login": "Login",
+  "forgotPassword": "Forgot your password?",
+
+  "timeTabs": {
+    "today": "Today",
+    "week": "Week",
+    "month": "Month",
+    "year": "Year"
+  },
+
+  "searchBirthday": "Search Birthday",
+  "upcomingBirthdays": "Upcoming birthdays",
+  "noupcoming": "No upcoming birthdays in this period",
+
+  "today": "Today",
+  "todayBirthdaysTitle": "Today’s Birthdays",
+  "noBirthdayToday": "No birthday today",
+
+  "whatsapp": "WhatsApp",
+  "sendGift": "Send a Gift",
+  "messenger": "Messenger",
+  "Upcomingbirthdays" : "Upcoming birthdays"
+  
 }

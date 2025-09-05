@@ -1,13 +1,17 @@
+// ListOfTime.jsx
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 export const TIME_TABS = [
-  { key: 'today', label: 'Today' },
-  { key: 'week', label: 'Week' },
-  { key: 'month', label: 'Month' },
-  { key: 'year', label: 'Year' },
+  { key: 'today', label: 'today' },
+  { key: 'week', label: 'week' },
+  { key: 'month', label: 'month' },
+  { key: 'year', label: 'year' },
 ];
 
 const ListOfTime = ({ value, onChange }) => {
+  const { t } = useTranslation();
+
   return (
     <View style={styles.row}>
       {TIME_TABS.map((tab) => {
@@ -23,10 +27,10 @@ const ListOfTime = ({ value, onChange }) => {
             ]}
             accessibilityRole="button"
             accessibilityState={{ selected: isActive }}
-            accessibilityLabel={`Filter by ${tab.label}`}
+            accessibilityLabel={t(`timeTabs.${tab.key}`)}
           >
             <Text style={[styles.text, isActive && styles.textActive]}>
-              {tab.label}
+              {t(`timeTabs.${tab.key}`)}
             </Text>
           </Pressable>
         );
@@ -36,31 +40,11 @@ const ListOfTime = ({ value, onChange }) => {
 };
 
 export default ListOfTime;
-
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    gap: 16,
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  chip: {
-    paddingHorizontal: 20,
-    paddingVertical: 4,
-    borderRadius: 24,
-  },
-  chipActive: {
-    backgroundColor: '#C850C0', // фиолетовая как на макете
-  },
-  chipPressed: {
-    opacity: 0.8,
-  },
-  text: {
-    fontSize: 16,
-    color: '#333',
-    fontWeight: '600',
-  },
-  textActive: {
-    color: '#fff',
-  },
+  row: { flexDirection: 'row', gap: 3, marginTop: 16, marginBottom: 8 },
+  chip: { paddingHorizontal: 20, paddingVertical: 4, borderRadius: 24 },
+  chipActive: { backgroundColor: '#C850C0' },
+  chipPressed: { opacity: 0.8 },
+  text: { fontSize: 16, color: '#333', fontWeight: '600' },
+  textActive: { color: '#fff' },
 });

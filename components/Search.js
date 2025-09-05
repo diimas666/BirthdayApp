@@ -10,8 +10,11 @@ import {
   ScrollView,
 } from 'react-native';
 import SearchSvg from '../assets/images/search-normal.svg';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
+import { useTranslation } from 'react-i18next';
+
 const Search = () => {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   function searchHandler(text) {
     setSearch(text);
@@ -23,7 +26,7 @@ const Search = () => {
         onChangeText={searchHandler}
         value={search}
         style={styles.input}
-        placeholder="Search birthYay"
+        placeholder={t('searchBirthday')}
         returnKeyType="search"
       />
     </View>
