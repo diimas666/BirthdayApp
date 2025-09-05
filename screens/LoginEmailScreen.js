@@ -9,7 +9,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import OrDivider from '../components/OrDivider';
@@ -60,7 +59,7 @@ export default function LoginEmailScreen() {
             inputMode="email"
           />
           <Pressable
-            onPress={() => navigation.navigate('Login Password')}
+            onPress={() => navigation.navigate('LoginPassword')}
             style={({ pressed }) => [
               styles.continue_button,
               pressed && { opacity: 0.7 },
@@ -103,7 +102,7 @@ export default function LoginEmailScreen() {
           <Text style={styles.note_link}>
             Don’t have an account?
             <Text
-              onPress={() => navigation.navigate('Sign Up')}
+              onPress={() => navigation.navigate('SignUp')}
               style={styles.link}
               accessibilityRole="link"
               accessibilityHint="Go to the Sign up screen"

@@ -1,8 +1,12 @@
 // App.js
+import './i18n';
+import { I18nextProvider } from 'react-i18next';
+import i18n from './i18n';
+
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Platform } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import {useEffect} from 'react'
+import { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -11,59 +15,74 @@ import NotificationsInitializer from './components/NotificationsInitializer';
 // экраны
 import WelcomeScreen from './screens/WelcomeScreen';
 import LoginEmailScreen from './screens/LoginEmailScreen';
-import SignUpScreen from './screens/SignUpScreen';
 import LoginPasswordScreen from './screens/LoginPasswordScreen';
+import SignUpScreen from './screens/SignUpScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import AddBirthdayScreen from './screens/AddBirthdayScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
 import UserScreen from './screens/UserScreen';
+import SettingsScreen from './screens/SettingsScreen';
 
 // иконки (SVG)
 import HomeIcon from './assets/images/House.svg';
 import AddIcon from './assets/images/add_birthday.svg';
 import BellIcon from './assets/images/notification.svg';
 
+// Redux
+import { Provider } from 'react-redux';
+import { store, persistor } from './store';
+import { PersistGate } from 'redux-persist/integration/react';
+
+import * as Notifications from 'expo-notifications';
+
 // навигаторы
 const RootStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const DashboardStackNav = createNativeStackNavigator();
-// 👉 NEW: Redux
-import { Provider } from 'react-redux';
-import { store, persistor } from './store/index';
-import { PersistGate } from 'redux-persist/integration/react';
 
-import * as Notifications from 'expo-notifications';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-AsyncStorage.clear();
-/**
- * 👇 Внутренний стек для Dashboard:
- * тут хранятся главный экран + UserScreen
- */
+/** Внутренний стек вкладки Home (Dashboard) */
 function DashboardStack() {
   return (
-    <DashboardStackNav.Navigator screenOptions={{ headerShown: false }}>
+    <DashboardStackNav.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: '#f5e8f7ff' },
+        headerTintColor: '#5b2d86',
+        headerTitleStyle: { fontWeight: '700', fontSize: 20 },
+      }}
+    >
       <DashboardStackNav.Screen
         name="DashboardMain"
         component={DashboardScreen}
+        options={{ headerShown: false }}
       />
-      <DashboardStackNav.Screen name="UserScreen" component={UserScreen} />
+      <DashboardStackNav.Screen
+        name="UserScreen"
+        component={UserScreen}
+        options={{ headerShown: false }}
+      />
+      <DashboardStackNav.Screen
+        name="SettingsScreen"
+        component={SettingsScreen}
+        options={{
+          // headerTitle: 'Settings',
+          title: i18n.t('settings'),
+          // headerBackTitle: i18n.t('back'), // ← тут свой текст: "Back" / "Назад"
+          headerBackTitleVisible: true,
+        }}
+      />
     </DashboardStackNav.Navigator>
   );
 }
 
-/**
- * 👇 Табы приложения
- */
-export function MainTabs() {
+/** Табы */
+function MainTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color }) => {
-          if (route.name === 'Home') {
+          if (route.name === 'Home')
             return <HomeIcon width={24} height={24} fill={color} />;
-          }
-          if (route.name === 'AddBirthday') {
+          if (route.name === 'AddBirthday')
             return (
               <AddIcon
                 width={72}
@@ -72,10 +91,8 @@ export function MainTabs() {
                 style={{ marginTop: -55, alignSelf: 'center' }}
               />
             );
-          }
-          if (route.name === 'Notifications') {
+          if (route.name === 'Notifications')
             return <BellIcon width={24} height={24} fill={color} />;
-          }
           return null;
         },
         tabBarActiveTintColor: '#a033b3',
@@ -97,7 +114,6 @@ export function MainTabs() {
         headerShown: false,
       })}
     >
-      {/* 👇 Вкладка Home теперь открывает DashboardStack */}
       <Tab.Screen name="Home" component={DashboardStack} />
       <Tab.Screen name="AddBirthday" component={AddBirthdayScreen} />
       <Tab.Screen name="Notifications" component={NotificationsScreen} />
@@ -105,7 +121,7 @@ export function MainTabs() {
   );
 }
 
-// чтобы уведомления показывались, даже если приложение открыто
+// уведомления
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -113,50 +129,44 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
-/**
- * 👇 Корневой стек приложения
- */
+
 export default function App() {
   useEffect(() => {
-    // Запрос разрешения
-    async function registerForPushNotificationsAsync() {
+    (async () => {
       const { status } = await Notifications.requestPermissionsAsync();
-      if (status !== 'granted') {
-        alert('Разрешение на уведомления не выдано!');
-      }
-    }
-    registerForPushNotificationsAsync();
+      if (status !== 'granted') alert('Разрешение на уведомления не выдано!');
+    })();
   }, []);
+
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor}>
-        <SafeAreaProvider>
-          <NavigationContainer>
-            <NotificationsInitializer />
-            <RootStack.Navigator screenOptions={{ headerShown: false }}>
-              <RootStack.Screen name="Welcome" component={WelcomeScreen} />
-              <RootStack.Screen name="Login" component={LoginEmailScreen} />
-              <RootStack.Screen name="Sign Up" component={SignUpScreen} />
-              <RootStack.Screen
-                name="Login Password"
-                component={LoginPasswordScreen}
-              />
+        <I18nextProvider i18n={i18n}>
+          <SafeAreaProvider>
+            <NavigationContainer>
+              <NotificationsInitializer />
 
-              {/* 👇 Тут теперь MainTabs */}
-              <RootStack.Screen name="Dashboard" component={MainTabs} />
-            </RootStack.Navigator>
-          </NavigationContainer>
+              {/* Корневой стек. ВАЖНО: ни одного дубликата имён! */}
+              <RootStack.Navigator screenOptions={{ headerShown: false }}>
+                <RootStack.Screen name="Welcome" component={WelcomeScreen} />
+                <RootStack.Screen name="Login" component={LoginEmailScreen} />
+                <RootStack.Screen
+                  name="LoginPassword"
+                  component={LoginPasswordScreen}
+                />
+                <RootStack.Screen name="SignUp" component={SignUpScreen} />
+                <RootStack.Screen name="Dashboard" component={MainTabs} />
+              </RootStack.Navigator>
 
-          <StatusBar style="auto" />
-        </SafeAreaProvider>
+              <StatusBar style="auto" />
+            </NavigationContainer>
+          </SafeAreaProvider>
+        </I18nextProvider>
       </PersistGate>
     </Provider>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5e8f7ff',
-  },
+  container: { flex: 1, backgroundColor: '#f5e8f7ff' },
 });

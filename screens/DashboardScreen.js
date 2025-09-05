@@ -1,12 +1,20 @@
 // /screens/DashboardScreen.jsx
 import React, { useMemo, useState, useCallback } from 'react';
-import { View, Text, StyleSheet, Image, FlatList } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  FlatList,
+  Pressable,
+} from 'react-native';
 import { format, parseISO, isWithinInterval } from 'date-fns';
 import { useSelector } from 'react-redux';
 import {
   useSafeAreaInsets,
   SafeAreaView,
 } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
 import Search from '../components/Search';
 import ListOfTime from '../components/ListOfTime';
@@ -14,6 +22,7 @@ import BirthdayCard from '../components/BirthdayCard';
 import UpcomingBirthdayItem from '../components/UpcomingBirthdayItem';
 import { getRange } from '../utils/getRange';
 import { avatarByKey } from '../store/birthdaysSlice';
+import { useNavigation } from '@react-navigation/native';
 
 const TAB_HEIGHT = 88; // у тебя такой же в tabBarStyle
 
@@ -21,7 +30,7 @@ export default function DashboardScreen() {
   const insets = useSafeAreaInsets(); // <— safe area
   const [period, setPeriod] = useState('today');
   const { start, end } = useMemo(() => getRange(period), [period]);
-
+  const navigate = useNavigation();
   const list = useSelector((s) => s.birthdays.list);
 
   const normalized = useMemo(
@@ -76,10 +85,24 @@ export default function DashboardScreen() {
                 <Text style={styles.nameText}>Hi Benjamin,</Text>
                 <Text style={styles.contentText}>Here are today’s update:</Text>
               </View>
-              <Image
-                source={require('../assets/images/profile.png')}
-                style={{ width: 50, height: 50, borderRadius: 25 }}
-              />
+              <View
+                style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}
+              >
+                <Pressable
+                  onPress={() => navigate.navigate('SettingsScreen')}
+                  style={({ pressed }) => [
+                    styles.iconBtn,
+                    pressed && styles.pressed,
+                  ]}
+                  android_ripple={{ color: '#e6d9ff' }}
+                >
+                  <Ionicons name="settings" size={30} color="#5b2d86" />
+                </Pressable>
+                <Image
+                  source={require('../assets/images/profile.png')}
+                  style={{ width: 50, height: 50, borderRadius: 25 }}
+                />
+              </View>
             </View>
 
             <Search />
@@ -132,5 +155,19 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     fontWeight: '600',
     fontSize: 18,
+  },
+  iconBtn: {
+    width: 45,
+    height: 45,
+    borderRadius: 12,
+    backgroundColor: '#f1e6ff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden', // <— важно для рипла (Android)
+    borderWidth: 1, // (необязательно) чтобы рипл было лучше видно
+    borderColor: '#e3d4ff',
+  },
+  pressed: {
+    opacity: 0.6, // <— iOS / общий feedback
   },
 });
