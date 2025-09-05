@@ -38,6 +38,21 @@
   "whatsapp": "WhatsApp",
   "sendGift": "Send a Gift",
   "messenger": "Messenger",
-  "Upcomingbirthdays" : "Upcoming birthdays"
-  
+  "Upcomingbirthdays": "Upcoming birthdays",
+  "addBirthday": {
+    "title": "Add Birthday",
+    "fullName": "Full name",
+    "phone": "Phone (optional)",
+    "birthDate": "Birth date",
+    "tapToChange": "tap to change"
+  },
+  "errors": {
+    "enterName": "Enter a name",
+    "checkPhone": "Check the phone number"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "lang": "Language"
 }

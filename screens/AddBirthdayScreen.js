@@ -13,6 +13,7 @@ import {
   Keyboard,
 } from 'react-native';
 import { scheduleBirthdayNotification } from '../utils/notifications';
+import { useTranslation } from 'react-i18next';
 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -21,31 +22,31 @@ import { useDispatch } from 'react-redux';
 import { addBirthday, AVATAR_KEYS } from '../store/birthdaysSlice';
 
 export default function AddBirthdayScreen() {
+  const { t } = useTranslation();
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  // Модалка сразу открыта
+
   const [visible, setVisible] = useState(true);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [date, setDate] = useState(new Date());
   const [androidPickerVisible, setAndroidPickerVisible] = useState(false);
 
-  // 👉 при каждом открытии вкладки модалка снова true
   useFocusEffect(
     useCallback(() => {
       setVisible(true);
     }, [])
   );
+
   const goBackToDashboardTab = () => {
     setVisible(false);
-    // ВАЖНО: имя вкладки должно совпадать с Tab.Screen name="Home"
-    navigation.navigate('Home');
+    navigation.navigate('Home'); // ⚠️ важно — имя Tab
   };
 
   const validate = () => {
-    if (!name.trim()) return 'Введи имя';
+    if (!name.trim()) return t('errors.enterName');
     if (phone && !/^[0-9+\-\s()]{5,}$/.test(phone))
-      return 'Проверь номер телефона';
+      return t('errors.checkPhone');
     return null;
   };
 
@@ -60,21 +61,13 @@ export default function AddBirthdayScreen() {
       avatarKey: AVATAR_KEYS[Math.floor(Math.random() * AVATAR_KEYS.length)],
     };
 
-    dispatch(addBirthday(payload)); // ✅ id добавляется автоматически внутри slice
-    await scheduleBirthdayNotification(payload); // 🔔 уведомление
+    dispatch(addBirthday(payload));
+    await scheduleBirthdayNotification(payload);
 
     setName('');
     setPhone('');
     setDate(new Date(2000, 0, 1));
     goBackToDashboardTab();
-  };
-
-  // iOS: inline spinner; Android: открываем системный диалог
-  const openAndroidDatePicker = () => setAndroidPickerVisible(true);
-
-  const onAndroidDateChange = (event, selectedDate) => {
-    setAndroidPickerVisible(false);
-    if (selectedDate) setDate(selectedDate);
   };
 
   return (
@@ -92,11 +85,11 @@ export default function AddBirthdayScreen() {
               style={{ width: '100%' }}
             >
               <View style={styles.card}>
-                <Text style={styles.title}>Add Birthday</Text>
+                <Text style={styles.title}>{t('addBirthday.title')}</Text>
 
                 <View style={{ gap: 12 }}>
                   <TextInput
-                    placeholder="Full name"
+                    placeholder={t('addBirthday.fullName')}
                     placeholderTextColor="#6E2588"
                     value={name}
                     onChangeText={setName}
@@ -105,7 +98,7 @@ export default function AddBirthdayScreen() {
                   />
 
                   <TextInput
-                    placeholder="Phone (optional)"
+                    placeholder={t('addBirthday.phone')}
                     placeholderTextColor="#6E2588"
                     value={phone}
                     onChangeText={setPhone}
@@ -115,28 +108,30 @@ export default function AddBirthdayScreen() {
                   />
 
                   <View>
-                    <Text style={styles.label}>Birth date</Text>
+                    <Text style={styles.label}>
+                      {t('addBirthday.birthDate')}
+                    </Text>
 
                     {Platform.OS === 'ios' ? (
-                      // iOS — безопасно: inline spinner
                       <DateTimePicker
                         value={date}
                         mode="date"
                         display="spinner"
                         onChange={(_, d) => d && setDate(d)}
-                        maximumDate={new Date()} // оставляем, но стартуем с 2000 года
+                        maximumDate={new Date()}
                       />
                     ) : (
                       <>
                         <Pressable
-                          onPress={openAndroidDatePicker}
+                          onPress={() => setAndroidPickerVisible(true)}
                           style={({ pressed }) => [
                             styles.pickBtn,
                             pressed && { opacity: 0.9 },
                           ]}
                         >
                           <Text style={styles.pickBtnText}>
-                            {date.toDateString()} (tap to change)
+                            {date.toDateString()} (
+                            {t('addBirthday.tapToChange')})
                           </Text>
                         </Pressable>
 
@@ -144,8 +139,8 @@ export default function AddBirthdayScreen() {
                           <DateTimePicker
                             value={date}
                             mode="date"
-                            display="default" // НЕ spinner — более стабильно
-                            onChange={onAndroidDateChange}
+                            display="default"
+                            onChange={(_, d) => d && setDate(d)}
                             maximumDate={new Date()}
                           />
                         )}
@@ -162,7 +157,7 @@ export default function AddBirthdayScreen() {
                       pressed && { opacity: 0.85 },
                     ]}
                   >
-                    <Text style={styles.cancelText}>Cancel</Text>
+                    <Text style={styles.cancelText}>{t('common.cancel')}</Text>
                   </Pressable>
 
                   <Pressable
@@ -178,7 +173,7 @@ export default function AddBirthdayScreen() {
                       end={{ x: 1, y: 0 }}
                       style={styles.saveGradient}
                     >
-                      <Text style={styles.saveText}>Save</Text>
+                      <Text style={styles.saveText}>{t('common.save')}</Text>
                     </LinearGradient>
                   </Pressable>
                 </View>
@@ -236,12 +231,7 @@ const styles = StyleSheet.create({
     color: '#1b0f2b',
     backgroundColor: '#fff',
   },
-  label: {
-    fontWeight: '700',
-    color: '#3a1c5c',
-    marginBottom: 6,
-    marginTop: 4,
-  },
+  label: { fontWeight: '700', color: '#3a1c5c', marginBottom: 6, marginTop: 4 },
   pickBtn: {
     alignSelf: 'flex-start',
     paddingVertical: 10,
@@ -251,15 +241,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e3d4ff',
   },
-  pickBtnText: {
-    color: '#512a7f',
-    fontWeight: '700',
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 18,
-  },
+  pickBtnText: { color: '#512a7f', fontWeight: '700' },
+  actions: { flexDirection: 'row', gap: 12, marginTop: 18 },
   cancelBtn: {
     flex: 1,
     height: 48,

@@ -13,7 +13,7 @@ export default function SettingsScreen() {
     navigation.setOptions({
       title: t('settings'),
       headerBackTitle: t('back'),
-      headerBackTitleVisible: true, // поставь false, если нужен только chevron
+      headerBackTitleVisible: true,
     });
   }, [navigation, i18n.language, t]);
 
@@ -25,14 +25,39 @@ export default function SettingsScreen() {
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.container}>
-        <Text style={styles.title}>{t('settings')}</Text>
+        <Text style={styles.title}>{t('lang')}</Text>
 
-        <Pressable style={styles.langBtn} onPress={() => changeLang('ua')}>
-          <Text style={styles.langText}>Українська</Text>
+        {/* 🇺🇦 Кнопка */}
+        <Pressable
+          style={[
+            styles.langBtn,
+            i18n.language === 'ua' && styles.activeBtn, // подсветка
+          ]}
+          onPress={() => changeLang('ua')}
+        >
+          <Text
+            style={[
+              styles.langText,
+              i18n.language === 'ua' && styles.activeText,
+            ]}
+          >
+            Українська
+          </Text>
         </Pressable>
 
-        <Pressable style={styles.langBtn} onPress={() => changeLang('en')}>
-          <Text style={styles.langText}>English</Text>
+        {/* 🇬🇧 Кнопка */}
+        <Pressable
+          style={[styles.langBtn, i18n.language === 'en' && styles.activeBtn]}
+          onPress={() => changeLang('en')}
+        >
+          <Text
+            style={[
+              styles.langText,
+              i18n.language === 'en' && styles.activeText,
+            ]}
+          >
+            English
+          </Text>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -58,6 +83,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#f3e6ff',
     borderRadius: 12,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: 'transparent',
   },
   langText: { color: '#3a1c5c', fontWeight: '600' },
+
+  // 🔥 Активная кнопка
+  activeBtn: {
+    borderColor: '#5b2d86',
+    backgroundColor: '#e7d4ff',
+  },
+  activeText: {
+    color: '#2b0d4d',
+    fontWeight: '700',
+  },
 });

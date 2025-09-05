@@ -38,5 +38,21 @@
   "whatsapp": "WhatsApp",
   "sendGift": "Надіслати подарунок",
   "messenger": "Messenger",
-  "Upcomingbirthdays": "Найближчі дні народження"
+  "Upcomingbirthdays": "Найближчі дні народження",
+  "addBirthday": {
+    "title": "Додати день народження",
+    "fullName": "Повне ім’я",
+    "phone": "Телефон (необов’язково)",
+    "birthDate": "Дата народження",
+    "tapToChange": "натисніть, щоб змінити"
+  },
+  "errors": {
+    "enterName": "Введіть ім’я",
+    "checkPhone": "Перевірте номер телефону"
+  },
+  "common": {
+    "cancel": "Скасувати",
+    "save": "Зберегти"
+  },
+  "lang": "Мoва"
 }
