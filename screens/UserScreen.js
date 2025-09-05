@@ -10,6 +10,7 @@ import {
   ScrollView,
   Animated,
   Alert,
+  Linking,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { format, parseISO } from 'date-fns';
@@ -82,6 +83,40 @@ const UserScreen = () => {
       ]
     );
   };
+  // нормализуем номер: оставляем цифры и плюс в начале
+  const normalizePhone = (raw) => {
+    if (!raw) return '';
+    const cleaned = String(raw)
+      .trim()
+      .replace(/[^\d+]/g, '');
+    // WhatsApp лучше без "+" → удалим его
+    const wa = cleaned.startsWith('+') ? cleaned.slice(1) : cleaned;
+    return { tel: cleaned, wa };
+  };
+
+  const openCall = (phone) => {
+    if (!phone)
+      return Alert.alert('Нет номера', 'У этого контакта нет телефона');
+    const { tel } = normalizePhone(phone);
+    Linking.openURL(`tel:${tel}`);
+  };
+
+  const openWhatsApp = async (phone) => {
+    if (!phone)
+      return Alert.alert(
+        'Нет номера',
+        'Добавьте номер, чтобы написать в WhatsApp'
+      );
+    const { wa } = normalizePhone(phone);
+    const url = `whatsapp://send?phone=${wa}`;
+    const supported = await Linking.canOpenURL(url);
+    if (supported) return Linking.openURL(url);
+    Alert.alert(
+      'WhatsApp не установлен',
+      'Установите WhatsApp и попробуйте снова'
+    );
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#faf5ff' }}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -134,12 +169,15 @@ const UserScreen = () => {
           <View style={styles.actionsRow}>
             <ActionIcon
               icon={<Ionicons name="call-outline" size={22} color="#4b256f" />}
+              onPress={() => openCall(base.phone)}
             />
             <ActionIcon
               icon={<Ionicons name="logo-whatsapp" size={22} color="#4b256f" />}
+              onPress={() => openWhatsApp(base.phone)}
             />
             <ActionIcon
               icon={<Ionicons name="logo-facebook" size={22} color="#4b256f" />}
+              onPress={() => Linking.openURL('https://facebook.com')}
             />
             <ActionIcon
               icon={
@@ -148,6 +186,9 @@ const UserScreen = () => {
                   size={22}
                   color="#4b256f"
                 />
+              }
+              onPress={() =>
+                Linking.openURL('https://google.com/search?q=gift+ideas')
               }
             />
           </View>
@@ -183,8 +224,12 @@ const UserScreen = () => {
   );
 };
 
-function ActionIcon({ icon }) {
-  return <Pressable style={styles.actionBtn}>{icon}</Pressable>;
+function ActionIcon({ icon, onPress }) {
+  return (
+    <Pressable onPress={onPress} style={styles.actionBtn}>
+      {icon}
+    </Pressable>
+  );
 }
 
 function InfoRow({ icon, title, value, subtitle, rightIcon }) {
